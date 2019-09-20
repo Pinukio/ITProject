@@ -2,36 +2,37 @@ package com.example.itproject
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.TedPermission
 import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mainButton : CircleImageView
     private lateinit var fragmentTransaction : FragmentTransaction
-    private val PERMISSION_CODE : Int = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //갤러리 퍼미션 체크
+        val permissionListener = object : PermissionListener {
 
-       /*
+            override fun onPermissionGranted() {
+            }
 
+            override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                finish()
+            }
+        }
 
-
-        if(permission_camera == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), PERMISSION_CODE)
-        }*/
+        TedPermission.with(applicationContext)
+            .setPermissionListener(permissionListener)
+            .setPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .check()
 
         mainButton = findViewById(R.id.circleImgview_main)
 
@@ -83,22 +84,4 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    /*override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-
-        if(requestCode == PERMISSION_CODE) {
-
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                //finish()
-                Toast.makeText(applicationContext, "권한 거절됨", Toast.LENGTH_LONG).show()
-            }
-
-        }
-
-        return
-
-    }*/
 }

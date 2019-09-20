@@ -2,26 +2,17 @@ package com.example.itproject
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.res.Resources
-import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
-import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import de.hdodenhof.circleimageview.CircleImageView
-import org.jetbrains.anko.*
-import org.jetbrains.anko.support.v4.UI
 
 class MainFragment : Fragment() {
 
@@ -105,7 +96,7 @@ class MainFragment : Fragment() {
             editor.apply()
 
             Handler().postDelayed({
-                fragmentManager.beginTransaction().remove(MainFragment@this).commit()
+                fragmentManager.beginTransaction().remove(this).commit()
 
             }, anim_reduction.duration)
 
@@ -130,7 +121,7 @@ class MainFragment : Fragment() {
             pencilButton.animation = disappearance_right
 
             Handler().postDelayed({
-                fragmentManager.beginTransaction().remove(MainFragment@this).commit()
+                fragmentManager.beginTransaction().remove(this).commit()
             }, anim_reduction.duration)
 
             val sf : SharedPreferences = activity!!.getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
@@ -143,11 +134,11 @@ class MainFragment : Fragment() {
 
         cameraButton.setOnClickListener {
 
-            fragmentManager!!.beginTransaction().remove(MainFragment@this).commit()
+            fragmentManager!!.beginTransaction().remove(this).commit()
             fragmentManager!!.beginTransaction().add(R.id.framelayout_main, PictureFragment()).commit()
 
             val sf : SharedPreferences = activity!!.getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
-            var editor : SharedPreferences.Editor = sf.edit()
+            val editor : SharedPreferences.Editor = sf.edit()
             editor.putInt("count", 2)
             editor.apply()
 
@@ -185,7 +176,7 @@ class MainFragment : Fragment() {
         editor.apply()
 
         Handler().postDelayed({
-            fragmentManager.beginTransaction().remove(MainFragment@this).commit()
+            fragmentManager.beginTransaction().remove(this).commit()
         }, anim_reduction.duration)
 
     }

@@ -4,28 +4,23 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
-import android.util.Log
+import android.provider.MediaStore.Images.Media.insertImage
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import de.hdodenhof.circleimageview.CircleImageView
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.InputStream
 
 class PictureFragment : Fragment() {
 
@@ -102,12 +97,12 @@ class PictureFragment : Fragment() {
             galleryButton.animation = disappearance_right
 
             val sf : SharedPreferences = activity!!.getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
-            var editor : SharedPreferences.Editor = sf.edit()
+            val editor : SharedPreferences.Editor = sf.edit()
             editor.putInt("count", 0)
             editor.apply()
 
             Handler().postDelayed({
-                fragmentManager.beginTransaction().remove(PictureFragment@this).commit()
+                fragmentManager.beginTransaction().remove(this).commit()
             }, anim_reduction.duration)
 
         }
@@ -131,45 +126,24 @@ class PictureFragment : Fragment() {
             editor.apply()
             editor1.apply()
 
-            fragmentManager.beginTransaction().remove(PictureFragment@this).commit()
+            fragmentManager.beginTransaction().remove(this).commit()
             fragmentManager.beginTransaction().add(R.id.framelayout_main, MainFragment()).commit()
 
         }
 
         galleryButton.setOnClickListener {
 
-            val permission_gallery : Int = ContextCompat.checkSelfPermission(context!!, android.Manifest.permission.READ_EXTERNAL_STORAGE)
-
-            if(permission_gallery == PackageManager.PERMISSION_DENIED ) {
-                requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), PERMISSION_GALLERY_CODE)
-            }
-
-            else {
-
-                val intent = Intent()
-                intent.type = "image/*"
-                intent.action = Intent.ACTION_GET_CONTENT
-                startActivityForResult(intent, REQ_GALLERY)
-
-            }
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT
+            startActivityForResult(intent, REQ_GALLERY)
 
         }
 
         cameraButton.setOnClickListener {
 
-            val permission_camera : Int = ContextCompat.checkSelfPermission(context!!, android.Manifest.permission.CAMERA)
-
-            if(permission_camera == PackageManager.PERMISSION_DENIED) {
-                requestPermissions(arrayOf(android.Manifest.permission.CAMERA), PERMISSION_CAMERA_CODE)
-            }
-
-            else {
-
-                val intent = Intent()
-                intent.action = MediaStore.ACTION_IMAGE_CAPTURE
-                startActivityForResult(intent, REQ_CAMERA)
-
-            }
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            startActivityForResult(intent, REQ_CAMERA)
 
         }
 
@@ -194,6 +168,7 @@ class PictureFragment : Fragment() {
         editor.putInt("count", 1)
         editor1.putInt("count", 1)
 
+
         editor.apply()
         editor1.apply()
 
@@ -203,6 +178,8 @@ class PictureFragment : Fragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        super.onActivityResult(requestCode, resultCode, data)
 
         if(resultCode == Activity.RESULT_OK) {
 
@@ -225,16 +202,12 @@ class PictureFragment : Fragment() {
             else if(requestCode == REQ_CAMERA) {
 
                 try {
-                    //val imageBitmap : Bitmap = data!!.extras!!.get("data") as Bitmap
+                    val imageBitmap : Bitmap = data!!.extras!!.get("data") as Bitmap
                     val intent = Intent(activity, ImageActivity::class.java)
-                    //val stream = ByteArrayOutputStream()
-                    //imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                    //val byteArray : ByteArray = stream.toByteArray()
-                    //val bundle = Bundle()
-                    //bundle.putByteArray("byteArray", byteArray)
-                    //intent.putExtra("bundle", bundle)
-                    //intent.putExtra("bitmap", byteArray)
-                    intent.putExtra("uri", data!!.data!!.toString())
+                    val stream = ByteArrayOutputStream()
+                    imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                    val path : String = insertImage(context!!.contentResolver, imageBitmap, "", "")!!
+                    intent.putExtra("uri", path)
                     startActivity(intent)
                 }
 
@@ -246,56 +219,6 @@ class PictureFragment : Fragment() {
 
         }
 
-        super.onActivityResult(requestCode, resultCode, data)
-
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-
-        if(requestCode == PERMISSION_GALLERY_CODE) {
-
-            if(grantResults.isNotEmpty()) {
-
-                if(grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    Toast.makeText(context, "권한 거절됨", Toast.LENGTH_SHORT).show()
-                }
-
-                else if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    val intent = Intent()
-                    intent.type = "image/*"
-                    intent.action = Intent.ACTION_GET_CONTENT
-                    startActivityForResult(intent, REQ_GALLERY)
-
-                }
-
-            }
-
-        }
-
-        else if(requestCode == PERMISSION_CAMERA_CODE) {
-
-            if(grantResults.isNotEmpty()) {
-
-                if(grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    Toast.makeText(context, "권한 거절됨", Toast.LENGTH_SHORT).show()
-                }
-
-                else if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    startActivityForResult(intent, REQ_CAMERA)
-
-                }
-
-            }
-
-        }
-
-        return
-    }
 }
