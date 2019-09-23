@@ -39,4 +39,5 @@
         android:id="@+id/imageview_gallery_picture"
         />
 
+
 </RelativeLayout>
