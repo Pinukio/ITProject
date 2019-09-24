@@ -1,5 +1,6 @@
 package com.example.itproject
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -11,7 +12,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
-import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.insertImage
 import android.view.LayoutInflater
@@ -24,27 +24,16 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import de.hdodenhof.circleimageview.CircleImageView
-import kotlinx.android.synthetic.main.frame_picture.*
 import java.io.*
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 class PictureFragment : Fragment() {
 
-    //private lateinit var mainButton : CircleImageView
     private lateinit var cameraButton : ImageView
     private lateinit var galleryButton : ImageView
-    //private lateinit var background_view : View
-    //private lateinit var disappearance_left : Animation
-    //private lateinit var disappearance_right : Animation
-    //private lateinit var anim_reduction : Animation
-    //private lateinit var anim_appearance : Animation
-    //private lateinit var anim_disappearance : Animation
     private val REQ_GALLERY : Int = 100
     private val REQ_CAMERA : Int = 101
-    private var photoUri : Uri? = null
-    private var cameraFileName : String? = null
     private var currentPhotoPath: String? = null
 
     override fun onCreateView(
@@ -219,22 +208,6 @@ class PictureFragment : Fragment() {
 
             else if(requestCode == REQ_CAMERA) {
 
-               /* try {
-                    val imageBitmap : Bitmap = data!!.extras!!.get("data") as Bitmap
-                    imageview.setImageURI(photoUri)
-                    val intent = Intent(activity, ImageActivity::class.java)
-                    val stream = ByteArrayOutputStream()
-                    imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                    val byteArray : ByteArray = stream.toByteArray()
-                    val path : String = insertImage(context!!.contentResolver, imageBitmap, "", "")!!
-                    intent.putExtra("uri", path)
-                    startActivity(intent)
-                }
-
-                catch (e : IOException) {
-
-                }*/
-
                 val file = File(currentPhotoPath)
                 val bitMap : Bitmap? = MediaStore.Images.Media.getBitmap(context!!.contentResolver, Uri.fromFile(file))
                 var rotateBitmap : Bitmap? = null
@@ -256,7 +229,6 @@ class PictureFragment : Fragment() {
                     val intent = Intent(activity, ImageActivity::class.java)
                     val stream = ByteArrayOutputStream()
                     rotateBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                    val byteArray : ByteArray = stream.toByteArray()
                     val path : String = insertImage(context!!.contentResolver, rotateBitmap, "", "")!!
                     intent.putExtra("uri", path)
                     startActivity(intent)
@@ -269,6 +241,7 @@ class PictureFragment : Fragment() {
 
     }
 
+    @SuppressLint("SimpleDateFormat")
     @Throws(IOException::class)
     fun createImageFile(): File {
         // Create an image file name
@@ -285,6 +258,7 @@ class PictureFragment : Fragment() {
     }
 
     fun dispatchTakePictureIntent() {
+
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
             takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
