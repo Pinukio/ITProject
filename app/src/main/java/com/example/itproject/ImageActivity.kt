@@ -4,8 +4,7 @@ import android.content.Intent
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Bundle
-import android.os.Message
+import android.os.*
 import android.provider.MediaStore
 import android.widget.ImageView
 import android.widget.TextView
@@ -13,9 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.googlecode.tesseract.android.TessBaseAPI
 import java.io.*
 import android.widget.Toast
-import android.os.Handler
 import kotlinx.android.synthetic.main.activity_image.*
-import android.os.Environment
 import android.util.Log
 
 class ImageActivity : AppCompatActivity() {
@@ -30,27 +27,11 @@ class ImageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image)
 
-        copyAssets()
 
-        val intent_: Intent? = intent
-        val imageUri: Uri = Uri.parse(intent_!!.getStringExtra("uri"))
-        val textView: TextView = findViewById(R.id.textView)
-        val imageView: ImageView = findViewById(R.id.imageView)
-        //imageView.setImageURI(imageUri)
+        val copyTask = CopyTask()
+        copyTask.execute()
 
-        val bitMap: Bitmap =
-            MediaStore.Images.Media.getBitmap(applicationContext.contentResolver, imageUri)
-        imageView.setImageBitmap(bitMap)
-        //dataPath = "${filesDir}/tesseract/"
-        dataPath = "${Environment.getExternalStorageDirectory()}/tesseract/"
 
-        var lang = "eng+kor"
-
-        tess = TessBaseAPI()
-        tess.init(dataPath, lang)
-        val ocrThread: OCRThread = OCRThread(bitMap)
-        ocrThread.isDaemon = true
-        ocrThread.start()
 
     }
 
@@ -213,9 +194,14 @@ class ImageActivity : AppCompatActivity() {
             Log.e("tag", "Failed to get asset file list.", e)
         }
 
-        val myDir = File("${Environment.getExternalStorageDirectory()}/tesseract/")
+        var myDir = File("${Environment.getExternalStorageDirectory()}/tesseract")
+        if(myDir.exists()) {
+            Log.i("heee", "제거")
+            myDir.delete()
+        }
+
+        myDir = File("${Environment.getExternalStorageDirectory()}/tessdata")
         if(!myDir.exists()) {
-            Log.i("heee", "생성")
             myDir.mkdir()
         }
 
@@ -224,8 +210,8 @@ class ImageActivity : AppCompatActivity() {
                 var ins: InputStream? = null
                 var ous: OutputStream? = null
                 try {
-                    ins = assetManager.open(filename)
-                    val outFile = File("${Environment.getExternalStorageDirectory()}/tesseract/", filename)
+                    ins = assetManager.open("tessdata/${filename}")
+                    val outFile = File("${Environment.getExternalStorageDirectory()}/tessdata/", filename)
                     ous = FileOutputStream(outFile)
                     copyFile(ins, ous)
                 } catch (e: IOException) {
@@ -259,6 +245,39 @@ class ImageActivity : AppCompatActivity() {
         while (read != -1) {
             ous.write(buffer, 0, read)
             read = ins.read(buffer)
+        }
+    }
+
+    inner class CopyTask : AsyncTask<Void, Void, Void>() {
+
+        override fun doInBackground(vararg p0: Void?): Void? {
+            copyAssets()
+            return null
+        }
+
+        override fun onPostExecute(result: Void?) {
+            
+            super.onPostExecute(result)
+
+            val intent_: Intent? = intent
+            val imageUri: Uri = Uri.parse(intent_!!.getStringExtra("uri"))
+            val textView: TextView = findViewById(R.id.textView)
+            val imageView: ImageView = findViewById(R.id.imageView)
+            //imageView.setImageURI(imageUri)
+
+            val bitMap: Bitmap =
+                MediaStore.Images.Media.getBitmap(applicationContext.contentResolver, imageUri)
+            imageView.setImageBitmap(bitMap)
+            //dataPath = "${filesDir}/tesseract/"
+            dataPath = "${Environment.getExternalStorageDirectory()}/"
+
+            var lang = "eng+kor"
+
+            tess = TessBaseAPI()
+            tess.init(dataPath, lang)
+            val ocrThread: OCRThread = OCRThread(bitMap)
+            ocrThread.isDaemon = true
+            ocrThread.start()
         }
     }
 
