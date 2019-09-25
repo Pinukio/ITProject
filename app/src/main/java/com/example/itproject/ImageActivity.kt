@@ -15,11 +15,8 @@ import java.io.*
 import android.widget.Toast
 import android.os.Handler
 import kotlinx.android.synthetic.main.activity_image.*
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.os.Environment
 import android.util.Log
-
 
 class ImageActivity : AppCompatActivity() {
 
@@ -33,7 +30,7 @@ class ImageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image)
 
-        //copyAssets()
+        copyAssets()
 
         val intent_: Intent? = intent
         val imageUri: Uri = Uri.parse(intent_!!.getStringExtra("uri"))
@@ -44,7 +41,8 @@ class ImageActivity : AppCompatActivity() {
         val bitMap: Bitmap =
             MediaStore.Images.Media.getBitmap(applicationContext.contentResolver, imageUri)
         imageView.setImageBitmap(bitMap)
-        dataPath = "${filesDir}/tesseract/"
+        //dataPath = "${filesDir}/tesseract/"
+        dataPath = "${Environment.getExternalStorageDirectory()}/tesseract/"
 
         var lang = "eng+kor"
 
@@ -62,7 +60,7 @@ class ImageActivity : AppCompatActivity() {
 
         if (dir.exists()) {
 
-            val filePath = "${dataPath}tessdata/${lang}.traineddata"
+            val filePath = "${dataPath}${lang}.traineddata"
             val dataFile = File(filePath)
 
             if (!dataFile.exists()) copyFiles(lang)
@@ -139,7 +137,7 @@ class ImageActivity : AppCompatActivity() {
         }
     }
 
-    private fun copyAssets() {
+    /*private fun copyAssets() {
         val assetManager = assets
         var files: Array<String>? = null
         try {
@@ -150,6 +148,22 @@ class ImageActivity : AppCompatActivity() {
 
         //if (files != null)
         //for (filename in files!!) Log.i("Hello2", filename)
+        val myDir = File("${Environment.getExternalStorageDirectory()}/tessdata/")
+        if(!myDir.exists()) {
+            Log.i("heee", "생성")
+            myDir.mkdir()
+        }
+        else {
+            val myFile = File("${Environment.getExternalStorageDirectory()}/tessdata/")
+            val files : Queue<File> = LinkedList<File>()
+            files.addAll(myFile.listFiles()!!)
+            val assets : Array<String> = assetManager.list("tessdata/")!!
+            for(ele : String in assets) {
+                val sub : Array<String> = assetManager.list(ele)!!
+                Log.i("heeeee", sub[0])
+            }
+
+        }
         val filename: String = "tessdata/"
         var ins: InputStream? = null
         var out: OutputStream? = null
@@ -159,7 +173,9 @@ class ImageActivity : AppCompatActivity() {
             for (lang in languageList) {
 
                 ins = assetManager.open("${filename}${lang}.traineddata")
-                val outFile = File(getExternalFilesDir(null), filename)
+                Log.i("heeeeeeeeeeeee", ins.toString())
+                //val outFile = File(getExternalFilesDir(null), filename)
+                val outFile = File("${Environment.getExternalStorageDirectory()}/tessdata/")
                 out = FileOutputStream(outFile)
                 copyFile(ins, out)
 
@@ -186,14 +202,62 @@ class ImageActivity : AppCompatActivity() {
             }
         }
         //}
+    }*/
+
+    private fun copyAssets() {
+        val assetManager = assets
+        var files: Array<String>? = null
+        try {
+            files = assetManager.list("tessdata/")
+        } catch (e: IOException) {
+            Log.e("tag", "Failed to get asset file list.", e)
+        }
+
+        val myDir = File("${Environment.getExternalStorageDirectory()}/tesseract/")
+        if(!myDir.exists()) {
+            Log.i("heee", "생성")
+            myDir.mkdir()
+        }
+
+        if (files != null)
+            for (filename in files) {
+                var ins: InputStream? = null
+                var ous: OutputStream? = null
+                try {
+                    ins = assetManager.open(filename)
+                    val outFile = File("${Environment.getExternalStorageDirectory()}/tesseract/", filename)
+                    ous = FileOutputStream(outFile)
+                    copyFile(ins, ous)
+                } catch (e: IOException) {
+                    Log.e("tag", "Failed to copy asset file: $filename", e)
+                } finally {
+                    if (ins != null) {
+                        try {
+                            ins.close()
+                        } catch (e: IOException) {
+                            // NOOP
+                        }
+
+                    }
+                    if (ous != null) {
+                        try {
+                            ous.close()
+                        } catch (e: IOException) {
+                            // NOOP
+                        }
+
+                    }
+                }
+            }
     }
 
+
     @Throws(IOException::class)
-    private fun copyFile(ins: InputStream, out: OutputStream) {
+    private fun copyFile(ins: InputStream, ous: OutputStream) {
         val buffer = ByteArray(1024)
         var read: Int = ins.read(buffer)
         while (read != -1) {
-            out.write(buffer, 0, read)
+            ous.write(buffer, 0, read)
             read = ins.read(buffer)
         }
     }
