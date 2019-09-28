@@ -64,8 +64,13 @@ class ImageActivity : AppCompatActivity() {
 
             when (msg.what) {
                 RESULT_OCR -> {
-                    textView.text = msg.obj.toString() //텍스트 변경
+                    //textView.text = msg.obj.toString() //텍스트 변경
+                    var count = 0
+                    val textArray : Array<String> = msg.obj.toString().split("\\W+".toRegex()).toTypedArray()
 
+                    for(c : String in textArray) {
+                        Log.i("Helllo", c)
+                    }
                     Toast.makeText(
                         applicationContext,
                         "인식 완료",
@@ -183,7 +188,7 @@ class ImageActivity : AppCompatActivity() {
 
             val intent_: Intent? = intent
             val imageUri: Uri = Uri.parse(intent_!!.getStringExtra("uri"))
-            val lang = "eng"
+            val lang = "eng+kor"
             bitMap =
                 MediaStore.Images.Media.getBitmap(applicationContext.contentResolver, imageUri)
             dataPath = "${Environment.getExternalStorageDirectory()}/"
@@ -200,7 +205,7 @@ class ImageActivity : AppCompatActivity() {
         override fun onPostExecute(result: Void?) {
             super.onPostExecute(result)
 
-            imageView.setImageBitmap(bitMap)
+            //imageView.setImageBitmap(bitMap)
 
             val sf: SharedPreferences =
                 applicationContext!!.getSharedPreferences("assetsCopied", Context.MODE_PRIVATE)
