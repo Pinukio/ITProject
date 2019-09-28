@@ -30,7 +30,6 @@ class ImageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image)
 
-
         val sf: SharedPreferences =
             applicationContext!!.getSharedPreferences("assetsCopied", Context.MODE_PRIVATE)
         assetsCopied = sf.getBoolean("assetsCopied", false)
@@ -88,13 +87,7 @@ class ImageActivity : AppCompatActivity() {
             Log.e("tag", "Failed to get asset file list.", e)
         }
 
-        var myDir = File("${Environment.getExternalStorageDirectory()}/tesseract")
-        if (myDir.exists()) {
-            Log.i("heee", "제거")
-            myDir.delete()
-        }
-
-        myDir = File("${Environment.getExternalStorageDirectory()}/tessdata")
+        val myDir = File("${Environment.getExternalStorageDirectory()}/tessdata")
         if (!myDir.exists()) {
             myDir.mkdir()
         }
