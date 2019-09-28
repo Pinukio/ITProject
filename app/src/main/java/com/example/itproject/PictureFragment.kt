@@ -23,6 +23,7 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.theartofdev.edmodo.cropper.CropImage
 import de.hdodenhof.circleimageview.CircleImageView
 import java.io.*
 import java.text.SimpleDateFormat
@@ -47,7 +48,7 @@ class PictureFragment : Fragment() {
         cameraButton = view.findViewById(R.id.imageview_camera_picture)
         galleryButton = view.findViewById(R.id.imageview_gallery_picture)
         val mainButton : CircleImageView = view.findViewById(R.id.main_button_picture)
-        val background_view : View = view.findViewById(R.id.view_frame_picture)
+        val backgroundView : View = view.findViewById(R.id.view_frame_picture)
         val disappearance_left = AnimationUtils.loadAnimation(activity, R.anim.disappearance_left)
         val disappearance_right = AnimationUtils.loadAnimation(activity, R.anim.disappearance_right)
         val anim_reduction = AnimationUtils.loadAnimation(activity, R.anim.reduction)
@@ -65,7 +66,7 @@ class PictureFragment : Fragment() {
             cameraButton.clearAnimation()
             galleryButton.clearAnimation()
 
-            background_view.alpha = 0f
+            backgroundView.alpha = 0f
 
             val params_mainButton : ViewGroup.LayoutParams = mainButton.layoutParams
 
@@ -105,7 +106,7 @@ class PictureFragment : Fragment() {
 
         }
 
-        background_view.setOnClickListener {
+        backgroundView.setOnClickListener {
 
             val fragmentManager : FragmentManager= activity!!.supportFragmentManager
 
@@ -139,19 +140,7 @@ class PictureFragment : Fragment() {
         }
 
         cameraButton.setOnClickListener {
-
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            /*val photo : File? = try {
-                createImageFile()
-            } catch(e : IOException) {
-                null
-            }
-            photoUri = FileProvider.getUriForFile(context!!, "com.example.itproject.fileprovider", photo!!)
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)*/
             dispatchTakePictureIntent()
-            //startActivityForResult(intent, REQ_CAMERA)
-            //takePictureIntent()
-
         }
 
         return view
@@ -193,10 +182,9 @@ class PictureFragment : Fragment() {
             if(requestCode == REQ_GALLERY) {
 
                 try {
-                    val intent = Intent(activity, ImageActivity::class.java)
                     val imageUri : Uri = data!!.data!!
-                    intent.putExtra("uri", imageUri.toString())
-                    startActivity(intent)
+                    CropImage.activity(imageUri)
+                        .start(context!!, this)
                 }
 
                 catch (e : IOException) {
@@ -208,33 +196,40 @@ class PictureFragment : Fragment() {
 
             else if(requestCode == REQ_CAMERA) {
 
-                val file = File(currentPhotoPath)
+                val file = File(currentPhotoPath!!)
                 val bitMap : Bitmap? = MediaStore.Images.Media.getBitmap(context!!.contentResolver, Uri.fromFile(file))
-                var rotateBitmap : Bitmap? = null
+                var rotateBitmap : Bitmap?
 
                 if(bitMap != null) {
 
-                    val exifInterface = ExifInterface(currentPhotoPath)
+                    val exifInterface = ExifInterface(currentPhotoPath!!)
                     val orientation : Int = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                         ExifInterface.ORIENTATION_UNDEFINED)
-                    when(orientation) {
+                    rotateBitmap = when(orientation) {
 
-                        ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap = rotateImage(bitMap, 90f)
-                        ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap = rotateImage(bitMap, 180f)
-                        ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap = rotateImage(bitMap, 270f)
-                        else -> rotateBitmap = bitMap
+                        ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitMap, 90f)
+                        ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitMap, 180f)
+                        ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitMap, 270f)
+                        else -> bitMap
 
                     }
 
-                    val intent = Intent(activity, ImageActivity::class.java)
                     val stream = ByteArrayOutputStream()
                     rotateBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                     val path : String = insertImage(context!!.contentResolver, rotateBitmap, "", "")!!
-                    intent.putExtra("uri", path)
-                    startActivity(intent)
+
+                    CropImage.activity(Uri.parse(path))
+                        .start(context!!, this)
 
                 }
 
+            }
+
+            else if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+
+                val intent = Intent(activity, ImageActivity::class.java)
+                intent.putExtra("uri", CropImage.getActivityResult(data).uri.toString())
+                startActivity(intent)
             }
 
         }
@@ -244,7 +239,6 @@ class PictureFragment : Fragment() {
     @SuppressLint("SimpleDateFormat")
     @Throws(IOException::class)
     fun createImageFile(): File {
-        // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File = activity!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         return File.createTempFile(
@@ -252,7 +246,6 @@ class PictureFragment : Fragment() {
             ".jpg", /* suffix */
             storageDir /* directory */
         ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
     }
@@ -260,16 +253,12 @@ class PictureFragment : Fragment() {
     fun dispatchTakePictureIntent() {
 
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            // Ensure that there's a camera activity to handle the intent
             takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
-                // Create the File where the photo should go
                 val photoFile: File? = try {
                     createImageFile()
                 } catch (ex: IOException) {
-                    // Error occurred while creating the File
                     null
                 }
-                // Continue only if the File was successfully created
                 photoFile?.also {
                     val photoURI: Uri = FileProvider.getUriForFile(
                         context!!,
