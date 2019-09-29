@@ -3,17 +3,25 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:id="@+id/textView"/>
+        android:id="@+id/textView"
+        android:textSize="20sp"/>
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="500dp"
         android:layout_below="@+id/textView"
         android:id="@+id/imageView"/>
+
+    <com.github.ybq.android.spinkit.SpinKitView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:SpinKit_Color="@color/colorMain"/>
 
 </RelativeLayout>

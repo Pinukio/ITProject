@@ -13,8 +13,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.googlecode.tesseract.android.TessBaseAPI
 import java.io.*
 import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_image.*
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
+import com.github.ybq.android.spinkit.sprite.Sprite
+import com.github.ybq.android.spinkit.style.WanderingCubes
+import kotlinx.android.synthetic.main.activity_image.*
 
 class ImageActivity : AppCompatActivity() {
 
@@ -23,6 +27,7 @@ class ImageActivity : AppCompatActivity() {
     private val RESULT_OCR: Int = 100
     private val messageHandler: MessageHandler = MessageHandler()
     private lateinit var progress: ProgressDialog
+    private lateinit var progressBar : ProgressBar
     private var assetsCopied = false
     private lateinit var bitMap: Bitmap
 
@@ -33,6 +38,8 @@ class ImageActivity : AppCompatActivity() {
         val sf: SharedPreferences =
             applicationContext!!.getSharedPreferences("assetsCopied", Context.MODE_PRIVATE)
         assetsCopied = sf.getBoolean("assetsCopied", false)
+
+        progressBar = findViewById(R.id.progress)
 
         if (!assetsCopied) copyTask().execute()
         else OCRTask().execute()
@@ -64,8 +71,7 @@ class ImageActivity : AppCompatActivity() {
 
             when (msg.what) {
                 RESULT_OCR -> {
-                    //textView.text = msg.obj.toString() //텍스트 변경
-                    var count = 0
+                    textView.text = msg.obj.toString() //텍스트 변경
                     val textArray : Array<String> = msg.obj.toString().split("\\W+".toRegex()).toTypedArray()
 
                     for(c : String in textArray) {
@@ -76,8 +82,8 @@ class ImageActivity : AppCompatActivity() {
                         "인식 완료",
                         Toast.LENGTH_SHORT
                     ).show()
-                    progress.dismiss()
-
+                    //progress.dismiss()
+                    progressBar.visibility = View.GONE
                 }
             }
         }
@@ -147,11 +153,15 @@ class ImageActivity : AppCompatActivity() {
         override fun onPreExecute() {
             super.onPreExecute()
 
-            progress = ProgressDialog(this@ImageActivity)
+            /*progress = ProgressDialog(this@ImageActivity)
             progress.setProgressStyle(ProgressDialog.STYLE_SPINNER)
             progress.setMessage("잠시만 기다려주세요.")
             progress.setCancelable(false)
-            progress.show()
+            progress.show()*/
+
+            val wanderingCubes : Sprite = WanderingCubes()
+            progressBar.indeterminateDrawable = wanderingCubes
+            progressBar.visibility = View.VISIBLE
 
         }
 
@@ -174,11 +184,15 @@ class ImageActivity : AppCompatActivity() {
 
             if (assetsCopied) {
 
-                progress = ProgressDialog(this@ImageActivity)
+                /*progress = ProgressDialog(this@ImageActivity)
                 progress.setProgressStyle(ProgressDialog.STYLE_SPINNER)
                 progress.setMessage("잠시만 기다려주세요.")
                 progress.setCancelable(false)
-                progress.show()
+                progress.show()*/
+
+                val wanderingCubes : Sprite = WanderingCubes()
+                progressBar.indeterminateDrawable = wanderingCubes
+                progressBar.visibility = View.VISIBLE
 
             }
 
