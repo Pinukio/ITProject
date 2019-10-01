@@ -1,11 +1,12 @@
 package com.example.itproject
 
 import android.annotation.SuppressLint
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.Point
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
@@ -15,7 +16,10 @@ import java.io.*
 import android.widget.Toast
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import com.github.ybq.android.spinkit.sprite.Sprite
 import com.github.ybq.android.spinkit.style.WanderingCubes
 import kotlinx.android.synthetic.main.activity_image.*
@@ -26,8 +30,7 @@ class ImageActivity : AppCompatActivity() {
     private lateinit var tess: TessBaseAPI
     private val RESULT_OCR: Int = 100
     private val messageHandler: MessageHandler = MessageHandler()
-    private lateinit var progress: ProgressDialog
-    private lateinit var progressBar : ProgressBar
+    private lateinit var progressBar: ProgressBar
     private var assetsCopied = false
     private lateinit var bitMap: Bitmap
 
@@ -71,18 +74,73 @@ class ImageActivity : AppCompatActivity() {
 
             when (msg.what) {
                 RESULT_OCR -> {
-                    textView.text = msg.obj.toString() //텍스트 변경
-                    val textArray : Array<String> = msg.obj.toString().split("\\W+".toRegex()).toTypedArray()
+                    val textArray: Array<String> =
+                        msg.obj.toString().split("\\W+".toRegex()).toTypedArray()
+                    val textSize = 16f
+                    val size = Point()
+                    windowManager.defaultDisplay.getSize(size)
+                    val displayWidth =
+                        size.x - (40 * resources.displayMetrics.density + 0.5f).toInt()
+                    val lParams_textView: ViewGroup.LayoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    val lParams_linearLayout: ViewGroup.LayoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    var textViewWidth = 0
+                    var linearLayout = LinearLayout(applicationContext)
+                    linearLayout.layoutParams = lParams_linearLayout
+                    linearLayout_scroll.addView(linearLayout)
 
-                    for(c : String in textArray) {
-                        Log.i("Helllo", c)
+                    for (c: String in textArray) run {
+
+                        var textView = TextView(applicationContext)
+                        textView.layoutParams = lParams_textView
+                        textView.text = c
+                        textView.textSize = textSize
+                        textView.setTextColor(Color.BLACK)
+                        textView.setOnClickListener {
+                            Toast.makeText(applicationContext, c, Toast.LENGTH_SHORT).show()
+                        }
+
+                        textView.measure(0, 0)
+                        textViewWidth += textView.measuredWidth
+
+                        if(textViewWidth > displayWidth) {
+
+                            textViewWidth = textView.measuredWidth
+                            //재선언하여 다음 줄에 사용하기 위함
+                            linearLayout = LinearLayout(applicationContext)
+                            linearLayout.layoutParams = lParams_linearLayout
+                            linearLayout_scroll.addView(linearLayout)
+                            linearLayout.addView(textView)
+
+                        }
+
+                        else linearLayout.addView(textView)
+
+                        textView = TextView(applicationContext)
+                        textView.textSize = textSize
+                        textView.text = " "
+                        textView.measure(0, 0)
+                        textViewWidth += textView.measuredWidth
+
+                        if(textViewWidth > displayWidth) {
+
+                            textViewWidth = 0
+                            //재선언하여 다음 줄에 사용하기 위함
+                            linearLayout = LinearLayout(applicationContext)
+                            linearLayout.layoutParams = lParams_linearLayout
+                            linearLayout_scroll.addView(linearLayout)
+
+                        }
+
+                        else linearLayout.addView(textView)
+
                     }
-                    Toast.makeText(
-                        applicationContext,
-                        "인식 완료",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    //progress.dismiss()
+                    Toast.makeText(applicationContext, "인식 완료", Toast.LENGTH_SHORT).show()
                     progressBar.visibility = View.GONE
                 }
             }
@@ -153,13 +211,7 @@ class ImageActivity : AppCompatActivity() {
         override fun onPreExecute() {
             super.onPreExecute()
 
-            /*progress = ProgressDialog(this@ImageActivity)
-            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-            progress.setMessage("잠시만 기다려주세요.")
-            progress.setCancelable(false)
-            progress.show()*/
-
-            val wanderingCubes : Sprite = WanderingCubes()
+            val wanderingCubes: Sprite = WanderingCubes()
             progressBar.indeterminateDrawable = wanderingCubes
             progressBar.visibility = View.VISIBLE
 
@@ -184,13 +236,7 @@ class ImageActivity : AppCompatActivity() {
 
             if (assetsCopied) {
 
-                /*progress = ProgressDialog(this@ImageActivity)
-                progress.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-                progress.setMessage("잠시만 기다려주세요.")
-                progress.setCancelable(false)
-                progress.show()*/
-
-                val wanderingCubes : Sprite = WanderingCubes()
+                val wanderingCubes: Sprite = WanderingCubes()
                 progressBar.indeterminateDrawable = wanderingCubes
                 progressBar.visibility = View.VISIBLE
 
@@ -218,8 +264,6 @@ class ImageActivity : AppCompatActivity() {
 
         override fun onPostExecute(result: Void?) {
             super.onPostExecute(result)
-
-            //imageView.setImageBitmap(bitMap)
 
             val sf: SharedPreferences =
                 applicationContext!!.getSharedPreferences("assetsCopied", Context.MODE_PRIVATE)
