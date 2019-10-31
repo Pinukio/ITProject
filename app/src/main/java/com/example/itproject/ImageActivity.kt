@@ -44,7 +44,10 @@ class ImageActivity : AppCompatActivity() {
 
         progressBar = findViewById(R.id.progress)
 
-        if (!assetsCopied) copyTask().execute()
+        if (!assetsCopied) {
+            copyTask().execute()
+            Log.i("흠", "터")
+        }
         else OCRTask().execute()
     }
 
@@ -94,6 +97,7 @@ class ImageActivity : AppCompatActivity() {
                     linearLayout.layoutParams = lParams_linearLayout
                     linearLayout_scroll.addView(linearLayout)
 
+                    //텍스트 생성
                     for (c: String in textArray) run {
 
                         var textView = TextView(applicationContext)
@@ -156,7 +160,8 @@ class ImageActivity : AppCompatActivity() {
             Log.e("tag", "Failed to get asset file list.", e)
         }
 
-        val myDir = File("${Environment.getExternalStorageDirectory()}/tessdata")
+        //val myDir = File("${Environment.getExternalStorageDirectory()}/tessdata")
+        val myDir = File("${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/tessdata")
         if (!myDir.exists()) {
             myDir.mkdir()
         }
@@ -168,8 +173,10 @@ class ImageActivity : AppCompatActivity() {
                 try {
                     ins = assetManager.open("tessdata/${filename}")
                     val outFile =
-                        File("${Environment.getExternalStorageDirectory()}/tessdata/", filename)
+                        //File("${Environment.getExternalStorageDirectory()}/tessdata/", filename)
+                        File("${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/tessdata/", filename)
                     ous = FileOutputStream(outFile)
+
                     copyFile(ins, ous)
                 } catch (e: IOException) {
                     Log.e("tag", "Failed to copy asset file: $filename", e)
@@ -251,7 +258,8 @@ class ImageActivity : AppCompatActivity() {
             val lang = "eng+kor"
             bitMap =
                 MediaStore.Images.Media.getBitmap(applicationContext.contentResolver, imageUri)
-            dataPath = "${Environment.getExternalStorageDirectory()}/"
+            //dataPath = "${Environment.getExternalStorageDirectory()}/"
+            dataPath = "${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/"
             tess = TessBaseAPI()
             tess.init(dataPath, lang)
             val ocrThread = OCRThread(bitMap)
