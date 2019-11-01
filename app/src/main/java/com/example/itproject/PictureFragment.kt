@@ -198,7 +198,7 @@ class PictureFragment : Fragment() {
 
                 val file = File(currentPhotoPath!!)
                 val bitMap : Bitmap? = MediaStore.Images.Media.getBitmap(context!!.contentResolver, Uri.fromFile(file))
-                var rotateBitmap : Bitmap?
+                val rotateBitmap : Bitmap?
 
                 if(bitMap != null) {
 
@@ -227,7 +227,7 @@ class PictureFragment : Fragment() {
 
             else if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
-                val intent = Intent(activity, ImageActivity::class.java)
+                val intent = Intent(activity, TextActivity::class.java)
                 intent.putExtra("uri", CropImage.getActivityResult(data).uri.toString())
                 startActivity(intent)
             }

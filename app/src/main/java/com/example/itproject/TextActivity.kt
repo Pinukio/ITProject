@@ -22,9 +22,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.github.ybq.android.spinkit.sprite.Sprite
 import com.github.ybq.android.spinkit.style.WanderingCubes
-import kotlinx.android.synthetic.main.activity_image.*
+import kotlinx.android.synthetic.main.activity_text.*
 
-class ImageActivity : AppCompatActivity() {
+class TextActivity : AppCompatActivity() {
 
     private lateinit var dataPath: String
     private lateinit var tess: TessBaseAPI
@@ -33,10 +33,17 @@ class ImageActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private var assetsCopied = false
     private lateinit var bitMap: Bitmap
+    private lateinit var array_word : ArrayList<String>
+    private lateinit var array_isClicked : ArrayList<Boolean>
+    private lateinit var array_textView : ArrayList<TextView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_image)
+        setContentView(R.layout.activity_text)
+
+        array_word = ArrayList()
+        array_isClicked = ArrayList()
+        array_textView = ArrayList()
 
         val sf: SharedPreferences =
             applicationContext!!.getSharedPreferences("assetsCopied", Context.MODE_PRIVATE)
@@ -59,7 +66,7 @@ class ImageActivity : AppCompatActivity() {
             super.run()
 
             tess.setImage(bitMap)
-            var OCRresult = tess.utF8Text
+            val OCRresult = tess.utF8Text
 
             val message: Message = Message.obtain()
             message.what = RESULT_OCR
@@ -77,7 +84,7 @@ class ImageActivity : AppCompatActivity() {
 
             when (msg.what) {
                 RESULT_OCR -> {
-                    val textArray: Array<String> =
+                    val array_text: Array<String> =
                         msg.obj.toString().split("\\W+".toRegex()).toTypedArray()
                     val textSize = 16f
                     val size = Point()
@@ -98,15 +105,46 @@ class ImageActivity : AppCompatActivity() {
                     linearLayout_scroll.addView(linearLayout)
 
                     //텍스트 생성
-                    for (c: String in textArray) run {
+                    //for (c: String in textArray) run {
+                    array_text.forEachIndexed { index, c ->
+
+                        array_isClicked.add(false)
 
                         var textView = TextView(applicationContext)
                         textView.layoutParams = lParams_textView
                         textView.text = c
                         textView.textSize = textSize
                         textView.setTextColor(Color.BLACK)
+
+                        //단어 클릭 시 선택, 다시 클릭 시 삭제
                         textView.setOnClickListener {
-                            Toast.makeText(applicationContext, c, Toast.LENGTH_SHORT).show()
+
+                            if(!array_isClicked[index]) {
+
+                                array_textView.forEachIndexed {i, t ->
+
+                                    if(t.text == c && array_isClicked[i]) {
+
+                                        t.background = null
+                                        array_word.remove(c)
+                                        array_isClicked[i] = false
+
+                                    }
+                                }
+
+                                it.setBackgroundResource(R.drawable.textview_background)
+                                array_word.add(c)
+                                array_isClicked[index] = true
+
+                            }
+
+                            else {
+                                it.background = null
+                                array_word.remove(c)
+                                array_isClicked[index] = false
+
+                            }
+
                         }
 
                         textView.measure(0, 0)
@@ -123,7 +161,10 @@ class ImageActivity : AppCompatActivity() {
 
                         }
 
-                        else linearLayout.addView(textView)
+                        else
+                            linearLayout.addView(textView)
+
+                        array_textView.add(textView)
 
                         textView = TextView(applicationContext)
                         textView.textSize = textSize
@@ -160,7 +201,6 @@ class ImageActivity : AppCompatActivity() {
             Log.e("tag", "Failed to get asset file list.", e)
         }
 
-        //val myDir = File("${Environment.getExternalStorageDirectory()}/tessdata")
         val myDir = File("${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/tessdata")
         if (!myDir.exists()) {
             myDir.mkdir()
@@ -173,7 +213,6 @@ class ImageActivity : AppCompatActivity() {
                 try {
                     ins = assetManager.open("tessdata/${filename}")
                     val outFile =
-                        //File("${Environment.getExternalStorageDirectory()}/tessdata/", filename)
                         File("${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/tessdata/", filename)
                     ous = FileOutputStream(outFile)
 
@@ -258,7 +297,6 @@ class ImageActivity : AppCompatActivity() {
             val lang = "eng+kor"
             bitMap =
                 MediaStore.Images.Media.getBitmap(applicationContext.contentResolver, imageUri)
-            //dataPath = "${Environment.getExternalStorageDirectory()}/"
             dataPath = "${getExternalFilesDir(Environment.DIRECTORY_PICTURES)}/"
             tess = TessBaseAPI()
             tess.init(dataPath, lang)
