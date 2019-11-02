@@ -23,6 +23,9 @@ import android.widget.TextView
 import com.github.ybq.android.spinkit.sprite.Sprite
 import com.github.ybq.android.spinkit.style.WanderingCubes
 import kotlinx.android.synthetic.main.activity_text.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class TextActivity : AppCompatActivity() {
 
@@ -44,6 +47,23 @@ class TextActivity : AppCompatActivity() {
         array_word = ArrayList()
         array_isClicked = ArrayList()
         array_textView = ArrayList()
+
+        val retrofitService=RetrofitService.create()
+        retrofitService.getWordRetrofit("domestic").enqueue(object : Callback<WordRepo> {
+            override fun onFailure(call: Call<WordRepo>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<WordRepo>, response: Response<WordRepo>) {
+
+                val wordrepo: WordRepo? = response.body()
+                Toast.makeText(applicationContext,wordrepo?.entry,Toast.LENGTH_SHORT).show()
+                Log.d("tag", wordrepo?.entry + "\n")
+                Log.d("tag", wordrepo?.meaning?.korean + "\n")
+
+            }
+
+        })
 
         val sf: SharedPreferences =
             applicationContext!!.getSharedPreferences("assetsCopied", Context.MODE_PRIVATE)
@@ -120,7 +140,7 @@ class TextActivity : AppCompatActivity() {
                         textView.setOnClickListener {
 
                             if(!array_isClicked[index]) {
-
+                                //중복 체크
                                 array_textView.forEachIndexed {i, t ->
 
                                     if(t.text == c && array_isClicked[i]) {
