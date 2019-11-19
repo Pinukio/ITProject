@@ -1,11 +1,13 @@
 package com.example.itproject
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.google.firebase.auth.FirebaseAuth
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import de.hdodenhof.circleimageview.CircleImageView
@@ -17,41 +19,51 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        val permissionListener = object : PermissionListener {
+        val firebaseAuth = FirebaseAuth.getInstance()
 
-            override fun onPermissionGranted() {
-            }
-
-            override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                finish()
-            }
+        if(firebaseAuth.currentUser == null)
+        {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
         }
 
-        TedPermission.with(applicationContext)
-            .setPermissionListener(permissionListener)
-            .setPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            .check()
+        else
+        {
+            setContentView(R.layout.activity_main)
 
-        mainButton = findViewById(R.id.circleImgview_main)
+            val permissionListener = object : PermissionListener
+            {
+                override fun onPermissionGranted() {}
+                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                    finish()
+                }
+            }
 
-        mainButton.setOnClickListener {
+            TedPermission.with(applicationContext)
+                .setPermissionListener(permissionListener)
+                .setPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .check()
 
-            fragmentTransaction =supportFragmentManager.beginTransaction()
-            fragmentTransaction.add(R.id.framelayout_main, MainFragment()).commit()
+            mainButton = findViewById(R.id.circleImgview_main)
 
-            val sf : SharedPreferences = getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
-            val sf1 : SharedPreferences = getSharedPreferences("count_mainFragment", Context.MODE_PRIVATE)
+            mainButton.setOnClickListener {
 
-            val editor : SharedPreferences.Editor = sf.edit()
-            val editor1 : SharedPreferences.Editor = sf1.edit()
+                fragmentTransaction =supportFragmentManager.beginTransaction()
+                fragmentTransaction.add(R.id.framelayout_main, MainFragment()).commit()
 
-            editor.putInt("count", 1)
-            editor1.putInt("count", 0)
+                val sf : SharedPreferences = getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
+                val sf1 : SharedPreferences = getSharedPreferences("count_mainFragment", Context.MODE_PRIVATE)
 
-            editor.apply()
-            editor1.apply()
+                val editor : SharedPreferences.Editor = sf.edit()
+                val editor1 : SharedPreferences.Editor = sf1.edit()
+
+                editor.putInt("count", 1)
+                editor1.putInt("count", 0)
+
+                editor.apply()
+                editor1.apply()
+            }
         }
     }
 
