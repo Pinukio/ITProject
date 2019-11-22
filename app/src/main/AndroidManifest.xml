@@ -18,6 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".MakeSetActivity"></activity>
         <activity android:name=".TextActivity" />
 
         <provider
@@ -40,7 +41,8 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Theme.AppCompat" />
-        <activity android:name=".LoginActivity"/>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".SignUpActivity" />
     </application>
 
 </manifest>

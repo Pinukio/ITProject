@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MakeSetActivity"
+    android:background="#ffffff">
 
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
@@ -11,7 +13,7 @@
         android:background="@color/colorMain"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
-        android:id="@+id/TextActivity_toolbar">
+        android:id="@+id/MakeSet_toolbar">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -21,20 +23,21 @@
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:src="@drawable/arrow_l"
+                android:src="@drawable/menu"
                 android:layout_gravity="center_vertical"
-                android:layout_margin="20dp"
-                android:id="@+id/back">
+                android:layout_margin="20dp">
 
             </ImageView>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="내 학습 세트 추가"
+                android:text="세트 만들기"
                 android:textColor="#ffffff"
                 android:layout_gravity="center_vertical|center"
-                android:textSize="20sp">
+                android:textSize="20sp"
+                >
+
             </TextView>
 
             <ImageView
@@ -43,7 +46,7 @@
                 android:src="@drawable/check_mark"
                 android:layout_gravity="center_vertical|right"
                 android:layout_margin="20dp"
-                android:id="@+id/TextActivity_check">
+                android:id="@+id/MakeSet_check">
 
             </ImageView>
 
@@ -51,19 +54,10 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/TextActivity_toolbar">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/linearLayout_scroll"
-            android:padding="20dp"/>
-
-    </ScrollView>
+        android:layout_below="@+id/MakeSet_toolbar"
+        android:id="@+id/MakeSet_recycler"/>
 
 </RelativeLayout>

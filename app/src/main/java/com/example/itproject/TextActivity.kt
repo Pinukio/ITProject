@@ -15,17 +15,13 @@ import com.googlecode.tesseract.android.TessBaseAPI
 import java.io.*
 import android.widget.Toast
 import android.util.Log
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
-import com.github.ybq.android.spinkit.sprite.Sprite
-import com.github.ybq.android.spinkit.style.WanderingCubes
+import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_text.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+
 
 class TextActivity : AppCompatActivity() {
 
@@ -33,12 +29,12 @@ class TextActivity : AppCompatActivity() {
     private lateinit var tess: TessBaseAPI
     private val RESULT_OCR: Int = 100
     private val messageHandler: MessageHandler = MessageHandler()
-    private lateinit var progressBar: ProgressBar
     private var assetsCopied = false
     private lateinit var bitMap: Bitmap
     private lateinit var array_word : ArrayList<String>
     private lateinit var array_isClicked : ArrayList<Boolean>
     private lateinit var array_textView : ArrayList<TextView>
+    private lateinit var dialog : AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,28 +44,15 @@ class TextActivity : AppCompatActivity() {
         array_isClicked = ArrayList()
         array_textView = ArrayList()
 
-        val retrofitService=RetrofitService.create()
-        retrofitService.getWordRetrofit("domestic").enqueue(object : Callback<WordRepo> {
-            override fun onFailure(call: Call<WordRepo>, t: Throwable) {
-
-            }
-
-            override fun onResponse(call: Call<WordRepo>, response: Response<WordRepo>) {
-
-                val wordrepo: WordRepo? = response.body()
-                Toast.makeText(applicationContext,wordrepo?.entry,Toast.LENGTH_SHORT).show()
-                Log.d("tag", wordrepo?.entry + "\n")
-                Log.d("tag", wordrepo?.meaning?.korean + "\n")
-
-            }
-
-        })
+        val builder : AlertDialog.Builder = AlertDialog.Builder(this)
+        val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        builder.setView(inflater.inflate(R.layout.dialog_loading, null))
+        builder.setCancelable(false)
+        dialog = builder.create()
 
         val sf: SharedPreferences =
             applicationContext!!.getSharedPreferences("assetsCopied", Context.MODE_PRIVATE)
         assetsCopied = sf.getBoolean("assetsCopied", false)
-
-        progressBar = findViewById(R.id.progress)
 
         if (!assetsCopied) {
             copyTask().execute()
@@ -125,7 +108,6 @@ class TextActivity : AppCompatActivity() {
                     linearLayout_scroll.addView(linearLayout)
 
                     //텍스트 생성
-                    //for (c: String in textArray) run {
                     array_text.forEachIndexed { index, c ->
 
                         array_isClicked.add(false)
@@ -155,6 +137,7 @@ class TextActivity : AppCompatActivity() {
                                 it.setBackgroundResource(R.drawable.textview_background)
                                 array_word.add(c)
                                 array_isClicked[index] = true
+
 
                             }
 
@@ -205,8 +188,15 @@ class TextActivity : AppCompatActivity() {
                         else linearLayout.addView(textView)
 
                     }
+                    TextActivity_check.setOnClickListener {
+                        val intent = Intent(applicationContext, MakeSetActivity::class.java)
+                        intent.putExtra("array_word", array_word)
+                        Log.i("여긴 텍스트액티비티", array_word[0])
+                        startActivity(intent)
+                    }
+
                     Toast.makeText(applicationContext, "인식 완료", Toast.LENGTH_SHORT).show()
-                    progressBar.visibility = View.GONE
+                    dialog.dismiss()
                 }
             }
         }
@@ -277,9 +267,7 @@ class TextActivity : AppCompatActivity() {
         override fun onPreExecute() {
             super.onPreExecute()
 
-            val wanderingCubes: Sprite = WanderingCubes()
-            progressBar.indeterminateDrawable = wanderingCubes
-            progressBar.visibility = View.VISIBLE
+            dialog.show()
 
         }
 
@@ -301,11 +289,7 @@ class TextActivity : AppCompatActivity() {
             super.onPreExecute()
 
             if (assetsCopied) {
-
-                val wanderingCubes: Sprite = WanderingCubes()
-                progressBar.indeterminateDrawable = wanderingCubes
-                progressBar.visibility = View.VISIBLE
-
+                dialog.show()
             }
 
         }

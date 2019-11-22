@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val firebaseAuth = FirebaseAuth.getInstance()
-
         if(firebaseAuth.currentUser == null)
         {
             val intent = Intent(this, LoginActivity::class.java)

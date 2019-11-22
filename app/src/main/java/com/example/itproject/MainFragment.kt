@@ -1,6 +1,7 @@
 package com.example.itproject
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
@@ -142,6 +143,10 @@ class MainFragment : Fragment() {
             editor.putInt("count", 2)
             editor.apply()
 
+        }
+
+        pencilButton.setOnClickListener {
+            startActivity(Intent(activity, MakeSetActivity::class.java))
         }
 
         return view

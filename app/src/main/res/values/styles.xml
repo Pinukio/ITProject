@@ -10,5 +10,9 @@
         <item name="colorControlActivated">@color/colorBlack</item>
         <item name="colorControlHighlight">@color/colorBlack</item>
     </style>
+    
+    <style name="progressbar_color">
+        <item name="colorAccent">@color/colorMain</item>
+    </style>
 
 </resources>
