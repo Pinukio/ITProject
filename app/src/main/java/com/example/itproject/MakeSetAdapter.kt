@@ -1,6 +1,5 @@
 package com.example.itproject
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,20 +7,19 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
+import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-class MakeSetAdapter(val list : MutableList<Model>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var array_checkbox : ArrayList<CheckBox>? = null
-    var array_selected : ArrayList<Int>? = null
-    var array_isChecked : ArrayList<Boolean>? = null
+
+class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    interface OnItemCheckListener {
+        fun onItemCheck(index : Int)
+        fun onItemUncheck(index : Int)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view : View?
-        array_checkbox = ArrayList()
-        array_selected = ArrayList()
-        array_isChecked = ArrayList()
-        for(i in 0 until list.size - 1)
-            array_isChecked!!.add(false)
 
         return when(viewType) {
 
@@ -32,7 +30,6 @@ class MakeSetAdapter(val list : MutableList<Model>) : RecyclerView.Adapter<Recyc
 
             Model.CARD_TYPE -> {
                 view = LayoutInflater.from(parent.context).inflate(R.layout.card_make_set, parent, false)
-                Log.i("Hello", "Hello")
                 CardTypeViewHolder(view)
             }
 
@@ -49,6 +46,7 @@ class MakeSetAdapter(val list : MutableList<Model>) : RecyclerView.Adapter<Recyc
             Model.TITLE_TYPE -> {
                 (holder as TitleTypeViewHolder).et_title.setText(item.text)
                 holder.et_subtitle.setText(item.text2)
+
             }
 
             Model.CARD_TYPE -> {
@@ -58,18 +56,10 @@ class MakeSetAdapter(val list : MutableList<Model>) : RecyclerView.Adapter<Recyc
                 holder.checkbox.tag = position
 
                 holder.checkbox.setOnClickListener {
-                    val tmp = it.tag as Int
-                    if(!array_isChecked!![tmp - 1]) {
-                        array_selected!!.add(tmp)
-                        array_isChecked!![tmp - 1] = true
-                        Log.i("Hello", tmp.toString())
-                    }
-
-                    else {
-                        array_selected!!.remove(tmp)
-                        array_isChecked!![tmp - 1] = false
-                    }
-
+                    if(holder.checkbox.isChecked)
+                        onItemClick.onItemCheck(holder.adapterPosition)
+                    else
+                        onItemClick.onItemUncheck(holder.adapterPosition)
                 }
             }
         }
@@ -92,27 +82,22 @@ class MakeSetAdapter(val list : MutableList<Model>) : RecyclerView.Adapter<Recyc
         val et_word : EditText = itemView.findViewById(R.id.MakeSet_word)
         val et_meaning : EditText = itemView.findViewById(R.id.MakeSet_meaning)
         val checkbox : CheckBox = itemView.findViewById(R.id.MakeSet_checkbox)
-
     }
 
     private fun removeItem(position : Int) {
         list.removeAt(position)
-        //array_selected!!.remove(position)
-        //array_checkbox!!.removeAt(position - 1)
         notifyItemRemoved(position)
     }
 
-    fun deleteItems() {
-        Collections.sort(array_selected!!, AscendingInteger())
-        val iter : MutableIterator<Int> = array_selected!!.iterator()
-        while(iter.hasNext()) {
-            removeItem(iter.next())
-            iter.remove()
-            Log.i("궁금", array_selected!!.size.toString())
+    fun deleteItems(array_selected : ArrayList<Int>){
+        if(array_selected.size > 1)
+            Collections.sort(array_selected, AscendingInteger())
+        array_selected.forEach {
+            removeItem(it)
         }
     }
 
-    internal inner class AscendingInteger : Comparator<Int> {
+    internal inner class AscendingInteger : Comparator<Int> { //오름차순으로 정렬
         override fun compare(a: Int, b: Int): Int {
             return b.compareTo(a)
         }
