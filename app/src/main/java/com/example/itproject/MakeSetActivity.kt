@@ -277,12 +277,10 @@ class MakeSetActivity : AppCompatActivity() {
         handler.post {
             if(recyclerView.findViewHolderForAdapterPosition(adapter!!.getLastIndex()) != null) {
                 for(i in 1..adapter!!.getLastIndex()) {
-                    Log.i("Hello", i.toString())
-                    Log.i("World", adapter!!.getLastIndex().toString())
                     //val word = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).text.toString()
-                    val word = recyclerView.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).text.toString()
+                    val word = recyclerView.findViewHolderForAdapterPosition(i)?.itemView!!.findViewById<EditText>(R.id.MakeSet_word).text.toString()
                     //val meaning = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).text.toString()
-                    val meaning = recyclerView.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).text.toString()
+                    val meaning = recyclerView.findViewHolderForAdapterPosition(i)?.itemView!!.findViewById<EditText>(R.id.MakeSet_meaning).text.toString()
                     array_word!!.add(word)
                     array_meaning!!.add(meaning)
                 }
