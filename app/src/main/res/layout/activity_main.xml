@@ -1,25 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/framelayout_main"
+
     >
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/Main_appbarlayout">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/Main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorMain" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="10"
-        android:orientation="vertical">
+        android:id="@+id/Main_frame"
+        android:layout_below="@+id/Main_appbarlayout">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="10"
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="520dp"
                 android:id="@+id/Main_relative"
-                android:layout_weight="7"
+
+                android:background="#ffffff"
                 >
 
                 <LinearLayout
@@ -27,13 +48,14 @@
                     android:layout_height="470dp"
                     android:background="@color/colorMain"
                     android:orientation="vertical">
-
+<!--
                     <ImageView
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_margin="15dp"
-                        android:src="@drawable/menu" />
-
+                        android:src="@drawable/menu"
+                        android:id="@+id/Main_menu"/>
+-->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -68,11 +90,12 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center|top"
                 android:layout_below="@+id/Main_relative"
-                android:layout_weight="3">
+
+                android:background="#ffffff">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -94,10 +117,15 @@
 
             </LinearLayout>
 
+        </LinearLayout>
 
-    </LinearLayout>
+    </FrameLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/Main_background"
+        android:visibility="invisible"
+        />
 
-
-</FrameLayout>
-
+</RelativeLayout>

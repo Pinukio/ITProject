@@ -10,7 +10,6 @@ import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-
 class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface OnItemCheckListener {
@@ -46,21 +45,22 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
             Model.TITLE_TYPE -> {
                 (holder as TitleTypeViewHolder).et_title.setText(item.text)
                 holder.et_subtitle.setText(item.text2)
-
             }
 
             Model.CARD_TYPE -> {
-
                 (holder as CardTypeViewHolder).et_word.setText(item.text)
                 holder.et_meaning.setText(item.text2)
-                holder.checkbox.tag = position
+                holder.checkbox.isChecked = false
 
                 holder.checkbox.setOnClickListener {
                     if(holder.checkbox.isChecked)
                         onItemClick.onItemCheck(holder.adapterPosition)
                     else
                         onItemClick.onItemUncheck(holder.adapterPosition)
+
+
                 }
+                holder.et_word.requestFocus()
             }
         }
     }
@@ -103,4 +103,13 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
         }
     }
 
+    fun addItem() : Int {
+        list.add(Model(Model.CARD_TYPE, "", ""))
+        notifyItemInserted(list.size - 1)
+        return getLastIndex()
+    }
+
+    fun getLastIndex() : Int {
+        return list.size - 1
+    }
 }

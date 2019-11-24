@@ -104,6 +104,8 @@ class PictureFragment : Fragment() {
                 fragmentManager.beginTransaction().remove(this).commit()
             }, anim_reduction.duration)
 
+            (activity as MainActivity).setToolBarColor("#2196F3")
+
         }
 
         backgroundView.setOnClickListener {
@@ -126,7 +128,7 @@ class PictureFragment : Fragment() {
             editor1.apply()
 
             fragmentManager.beginTransaction().remove(this).commit()
-            fragmentManager.beginTransaction().add(R.id.framelayout_main, MainFragment()).commit()
+            fragmentManager.beginTransaction().add(R.id.Main_frame, MainFragment()).commit()
 
         }
 
@@ -169,7 +171,7 @@ class PictureFragment : Fragment() {
         editor1.apply()
 
         fragmentManager.beginTransaction().remove(this).commit()
-        fragmentManager.beginTransaction().add(R.id.framelayout_main, MainFragment()).commit()
+        fragmentManager.beginTransaction().add(R.id.Main_frame, MainFragment()).commit()
 
     }
 

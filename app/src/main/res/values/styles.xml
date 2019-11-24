@@ -9,10 +9,12 @@
         <item name="colorControlNormal">@color/colorBlack</item>
         <item name="colorControlActivated">@color/colorBlack</item>
         <item name="colorControlHighlight">@color/colorBlack</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
-    
-    <style name="progressbar_color">
-        <item name="colorAccent">@color/colorMain</item>
+
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
     </style>
 
 </resources>

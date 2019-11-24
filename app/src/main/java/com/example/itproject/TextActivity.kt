@@ -22,7 +22,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_text.*
 
-
 class TextActivity : AppCompatActivity() {
 
     private lateinit var dataPath: String
@@ -59,6 +58,20 @@ class TextActivity : AppCompatActivity() {
             Log.i("흠", "터")
         }
         else OCRTask().execute()
+
+        TextActivity_check.setOnClickListener {
+
+            if(array_word.size > 0) {
+                val intent = Intent(applicationContext, MakeSetActivity::class.java)
+                intent.putExtra("array_word", array_word)
+                startActivity(intent)
+            }
+
+        }
+
+        TextACtivity_back.setOnClickListener {
+            finish()
+        }
     }
 
     inner class OCRThread(bm: Bitmap) : Thread() {
@@ -188,12 +201,7 @@ class TextActivity : AppCompatActivity() {
                         else linearLayout.addView(textView)
 
                     }
-                    TextActivity_check.setOnClickListener {
-                        val intent = Intent(applicationContext, MakeSetActivity::class.java)
-                        intent.putExtra("array_word", array_word)
-                        Log.i("여긴 텍스트액티비티", array_word[0])
-                        startActivity(intent)
-                    }
+
 
                     Toast.makeText(applicationContext, "인식 완료", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
