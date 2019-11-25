@@ -46,8 +46,8 @@
             </TextView>
 
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="25dp"
+                android:layout_height="325dp"
                 android:layout_gravity="end"
                 android:layout_toLeftOf="@+id/MakeSet_checkbtn"
                 android:layout_centerVertical="true"

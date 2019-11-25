@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
@@ -129,9 +130,27 @@ class MakeSetActivity : AppCompatActivity() {
         MakeSet_checkbtn.setOnClickListener {
             if(adapter != null) {
 
-                array_word = ArrayList()
-                array_meaning = ArrayList()
+                /*array_word = ArrayList()
+                array_meaning = ArrayList()*/
+                array_word = adapter!!.getWords()
+                array_meaning = adapter!!.getMeanings()
+                val title = adapter!!.getTitleText()
+                val subtitle = adapter!!.getSubtitleText()
 
+                if(title.isEmpty()) {
+                    Toast.makeText(applicationContext, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                    moveFocus(0, "title")
+                }
+                else if(array_word!!.contains("")) {
+                    var index = array_word!!.indexOf("") + 1
+                    Toast.makeText(applicationContext, "단어를 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                    moveFocus(index, "word")
+                }
+                else if(array_meaning!!.contains("")) {
+                    var index = array_meaning!!.indexOf("") + 1
+                    Toast.makeText(applicationContext, "뜻을 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                    moveFocus(index, "meaning")
+                }
                 /*for(i in 1..adapter!!.getLastIndex()) {
                     val word = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).text.toString()
                     val meaning = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).text.toString()
@@ -139,7 +158,7 @@ class MakeSetActivity : AppCompatActivity() {
                     array_meaning!!.add(meaning)
                 }*/
 
-                postAndNotifyAdapter(Handler(), MakeSet_recycler)
+                //postAndNotifyAdapter(Handler(), MakeSet_recycler)
 
                 /*val title : String = MakeSet_recycler.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).text.toString()
                 val subtitle : String = MakeSet_recycler.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_subtitle).text.toString()
@@ -257,37 +276,50 @@ class MakeSetActivity : AppCompatActivity() {
 
     fun moveFocus(position : Int, what : String) {
         val imm : InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        if(what == "word") {
-            MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).requestFocus()
-            imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word), 0)
-        }
-        else if(what == "meaning") {
-            MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).requestFocus()
-            imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning), 0)
-        }
-        else if(what == "title") {
-            MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).requestFocus()
-            imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title), 0)
-        }
         MakeSet_recycler.scrollToPosition(position)
+        Handler().postDelayed({
+            if(what == "word") {
+                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).requestFocus()
+                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word), 0)
+            } else if(what == "meaning") {
+                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).requestFocus()
+                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning), 0)
+            } else if(what == "title") {
+                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).requestFocus()
+                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title), 0)
+            }
+        }, 50)
+        /*if(MakeSet_recycler.scrollState == RecyclerView.SCROLL_STATE_DRAGGING) {
+            if(what == "word") {
+                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).requestFocus()
+                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word), 0)
+            }
+            else if(what == "meaning") {
+                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).requestFocus()
+                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning), 0)
+            }
+            else if(what == "title") {
+                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).requestFocus()
+                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title), 0)
+            }
+        }*/
     }
 
-    private fun postAndNotifyAdapter(handler : Handler, recyclerView : RecyclerView) {
+    /*private fun postAndNotifyAdapter(handler : Handler, recyclerView : RecyclerView) {
         handler.post {
             if(recyclerView.findViewHolderForAdapterPosition(adapter!!.getLastIndex()) != null) {
                 for(i in 1..adapter!!.getLastIndex()) {
                     //val word = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).text.toString()
-                    val word = recyclerView.findViewHolderForAdapterPosition(i)?.itemView!!.findViewById<EditText>(R.id.MakeSet_word).text.toString()
+                    val word = recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.findViewById<EditText>(R.id.MakeSet_word)?.text.toString()
                     //val meaning = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).text.toString()
-                    val meaning = recyclerView.findViewHolderForAdapterPosition(i)?.itemView!!.findViewById<EditText>(R.id.MakeSet_meaning).text.toString()
+                    val meaning = recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.findViewById<EditText>(R.id.MakeSet_meaning)?.text.toString()
                     array_word!!.add(word)
                     array_meaning!!.add(meaning)
                 }
                     //val title : String = MakeSet_recycler.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).text.toString()
-                    val title : String = recyclerView.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).text.toString()
+                    val title : String = recyclerView.findViewHolderForAdapterPosition(0)?.itemView?.findViewById<EditText>(R.id.MakeSet_title)?.text.toString()
                     //val subtitle : String = MakeSet_recycler.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_subtitle).text.toString()
-                    val subtitle : String = recyclerView.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_subtitle).text.toString()
+                    val subtitle : String = recyclerView.findViewHolderForAdapterPosition(0)?.itemView?.findViewById<EditText>(R.id.MakeSet_subtitle)?.text.toString()
 
                     if(title.isEmpty()) {
                         Toast.makeText(applicationContext, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show()
@@ -308,5 +340,5 @@ class MakeSetActivity : AppCompatActivity() {
                 postAndNotifyAdapter(handler, recyclerView)
             }
         }
-    }
+    }*/
 }
