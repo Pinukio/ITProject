@@ -6,17 +6,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import androidx.annotation.MainThread
 import androidx.appcompat.app.ActionBar
-import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.yarolegovich.slidingrootnav.SlidingRootNav
@@ -24,7 +25,6 @@ import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import com.yarolegovich.slidingrootnav.callback.DragStateListener
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_make_set.*
 import kotlinx.android.synthetic.main.menu.*
 
 class MainActivity : AppCompatActivity() {
@@ -34,22 +34,47 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nav : SlidingRootNav
     private lateinit var actionBar : ActionBar
     private lateinit var builder : SlidingRootNavBuilder
+    private lateinit var dialog : AlertDialog
+    private var count = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val firebaseAuth = FirebaseAuth.getInstance()
-        if(firebaseAuth.currentUser == null)
-        {
+        //firebaseAuth.signOut()
+        if(firebaseAuth.currentUser == null) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
-        else
-        {
+        else {
             setContentView(R.layout.activity_main)
             Main_toolbar.setTitleTextColor(Color.WHITE)
             setSupportActionBar(Main_toolbar)
+
+            val alertBuilder : AlertDialog.Builder = AlertDialog.Builder(this)
+            val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            alertBuilder.setView(inflater.inflate(R.layout.dialog_loading, null))
+            alertBuilder.setCancelable(false)
+            dialog = alertBuilder.create()
+            dialog.show()
+
+            val db = FirebaseFirestore.getInstance()
+            db.collection("users").document(firebaseAuth.currentUser!!.email.toString()).collection("sets")
+                .get().addOnCompleteListener {
+                    if(it.isSuccessful) {
+                        for(document in it.result!!) {
+                            count++
+                        }
+                        val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
+                        val et: SharedPreferences.Editor = sf_countBefore.edit()
+                        et.putInt("sets_before", count)
+                        et.apply()
+                        val tmp = "보유 중인 학습 세트 : ${count}개"
+                        textview_allSet_main.text = tmp
+                        dialog.dismiss()
+                    }
+                }
             builder = SlidingRootNavBuilder(this)
             setDragStateListener()
             nav = makeNav()
@@ -97,7 +122,6 @@ class MainActivity : AppCompatActivity() {
                     editor.apply()
                     editor1.apply()
 
-
                 }
 
             }
@@ -109,12 +133,11 @@ class MainActivity : AppCompatActivity() {
             /*Main_frame.setOnClickListener {
                 if(nav.isMenuOpened) nav.closeMenu()
             }*/
-        }
+            Menu_home.setOnClickListener {
+                //startActivity(Intent(this, MainActivity::class.java))
+                nav.closeMenu()
 
-        Menu_home.setOnClickListener {
-            //startActivity(Intent(this, MainActivity::class.java))
-            nav.closeMenu()
-
+            }
         }
     }
 
@@ -131,6 +154,7 @@ class MainActivity : AppCompatActivity() {
             if(count == 1) {
                 val mainFragment : MainFragment = supportFragmentManager.findFragmentById(R.id.Main_frame) as MainFragment
                 mainFragment.back()
+                setToolBarColor("#2196f3")
             }
 
             if(count == 2) {
@@ -157,7 +181,6 @@ class MainActivity : AppCompatActivity() {
             .withRootViewYTranslation(0)
             .withToolbarMenuToggle(Main_toolbar)
             .inject()
-
     }
 
     fun setToolBarColor(s : String) {
@@ -187,4 +210,10 @@ class MainActivity : AppCompatActivity() {
         actionBar.setDisplayHomeAsUpEnabled(true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
+        val count_ : Int = sf.getInt("sets", count)
+        textview_allSet_main.text = "보유 중인 학습 세트 : ${count_}개"
+    }
 }

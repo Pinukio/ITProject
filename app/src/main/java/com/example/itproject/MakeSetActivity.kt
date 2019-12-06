@@ -1,28 +1,28 @@
 package com.example.itproject
 
 import android.content.Context
-import android.hardware.input.InputManager
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.itproject.MakeSetAdapter.OnItemCheckListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_make_set.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
-import kotlin.Comparator
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class MakeSetActivity : AppCompatActivity() {
 
@@ -34,8 +34,7 @@ class MakeSetActivity : AppCompatActivity() {
     private var array_null : ArrayList<Int>? = null // 뜻이 리턴되지 않은 단어들의 인덱스 저장
     private lateinit var onItemClick : OnItemCheckListener
     private var array_selected : ArrayList<Int>? = null
-    /*private lateinit var nav : SlidingRootNav
-    private lateinit var builder : SlidingRootNavBuilder*/
+    private var acti : MakeSetActivity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,21 +46,11 @@ class MakeSetActivity : AppCompatActivity() {
         array_null = ArrayList()
         array_selected = ArrayList()
 
-        /*builder = SlidingRootNavBuilder(this)
-        setDragStateListener()
-        nav = makeNav()
-*/
-        /*MakeSet_menu.setOnClickListener {
-            if(nav.isMenuClosed)
-                nav.openMenu()
-            else
-                nav.closeMenu()
-        }
-
-        MakeSet_background.setOnClickListener {
-            if(nav.isMenuOpened)
-                nav.closeMenu()
-        }*/
+        val alertBuilder : AlertDialog.Builder = AlertDialog.Builder(this)
+        val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        alertBuilder.setView(inflater.inflate(R.layout.dialog_loading, null))
+        alertBuilder.setCancelable(false)
+        dialog = alertBuilder.create()
 
         MakeSet_back.setOnClickListener {
             finish()
@@ -71,20 +60,17 @@ class MakeSetActivity : AppCompatActivity() {
 
             override fun onItemCheck(index : Int) {
                 array_selected!!.add(index)
+                adapter!!.setSelectedArray(index, true)
             }
 
             override fun onItemUncheck(index: Int) {
                 array_selected!!.remove(index)
+                adapter!!.setSelectedArray(index, false)
             }
         }
 
         if(array_word != null) {
-
-            val alertBuilder : AlertDialog.Builder = AlertDialog.Builder(this)
-            val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            alertBuilder.setView(inflater.inflate(R.layout.dialog_loading, null))
-            alertBuilder.setCancelable(false)
-            dialog = alertBuilder.create()
+            acti = this
             dialog!!.show()
 
             for(i in 0 until array_word!!.size)
@@ -112,12 +98,10 @@ class MakeSetActivity : AppCompatActivity() {
         else {
             list = mutableListOf<Model>().apply {
                 add(Model(Model.TITLE_TYPE, "", ""))
-                for (i in 0..1)
-                add(Model(Model.CARD_TYPE, "", ""))
             }
-
-
-            adapter = MakeSetAdapter(list!!, onItemClick)
+            adapter = MakeSetAdapter(list!!, onItemClick, true)
+            for(i in 0..1)
+            adapter!!.addItem()
             MakeSet_recycler.adapter = adapter
             MakeSet_recycler.layoutManager = LinearLayoutManager(this)
         }
@@ -130,8 +114,6 @@ class MakeSetActivity : AppCompatActivity() {
         MakeSet_checkbtn.setOnClickListener {
             if(adapter != null) {
 
-                /*array_word = ArrayList()
-                array_meaning = ArrayList()*/
                 array_word = adapter!!.getWords()
                 array_meaning = adapter!!.getMeanings()
                 val title = adapter!!.getTitleText()
@@ -141,8 +123,13 @@ class MakeSetActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show()
                     moveFocus(0, "title")
                 }
+
+                else if(array_word!!.size == 0) {
+                    Toast.makeText(applicationContext, "카드를 만들어 주세요.", Toast.LENGTH_SHORT).show()
+                }
                 else if(array_word!!.contains("")) {
                     var index = array_word!!.indexOf("") + 1
+                    Log.i("흠음", array_word!!.size.toString())
                     Toast.makeText(applicationContext, "단어를 입력해 주세요.", Toast.LENGTH_SHORT).show()
                     moveFocus(index, "word")
                 }
@@ -151,33 +138,57 @@ class MakeSetActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, "뜻을 입력해 주세요.", Toast.LENGTH_SHORT).show()
                     moveFocus(index, "meaning")
                 }
-                /*for(i in 1..adapter!!.getLastIndex()) {
-                    val word = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).text.toString()
-                    val meaning = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).text.toString()
-                    array_word!!.add(word)
-                    array_meaning!!.add(meaning)
-                }*/
 
-                //postAndNotifyAdapter(Handler(), MakeSet_recycler)
+                else {
+                    dialog!!.show()
 
-                /*val title : String = MakeSet_recycler.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).text.toString()
-                val subtitle : String = MakeSet_recycler.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_subtitle).text.toString()
+                    val db : FirebaseFirestore = FirebaseFirestore.getInstance()
+                    val email: String = FirebaseAuth.getInstance().currentUser!!.email.toString()
 
-                if(title.isEmpty()) {
-                    Toast.makeText(applicationContext, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                    moveFocus(0, "title")
+                    var count = 0
+                    val tmp = db.collection("users").document(email).collection("sets").document(title)
+
+                    for(i in 0 until array_word!!.size) {
+                        //val map : HashMap<String, String> = HashMap()
+                        //map["word"] = array_word!![i]
+                        //map["meaning"] = array_meaning!![i]
+                        val map = hashMapOf(
+                            "word" to array_word!![i],
+                            "meaning" to array_meaning!![i],
+                            "star" to false
+                        )
+
+                        tmp.collection("_").document(i.toString()).set(map)
+                            .addOnSuccessListener {
+                                if(i == array_word!!.size - 1) {
+                                    dialog!!.dismiss()
+                                    val intent = Intent(this, SetActivity::class.java)
+                                    //intent.putExtra("array_word", array_word)
+                                    //intent.putExtra("array_meaning", array_meaning)
+                                    intent.putExtra("title", title)
+                                    intent.putExtra("subtitle", subtitle)
+                                    startActivity(intent)
+                                }
+                            }
+                        count++
+                    }
+                    //subMap["subtitle"] = subtitle
+                    //subMap["size"] = count
+                    val subMap = hashMapOf(
+                        "subtitle" to subtitle,
+                        "size" to count
+                    )
+
+                    tmp.set(subMap)
+
                 }
-                else if(array_word!!.contains("")) {
-                    var index = array_word!!.indexOf("") + 1
-                    Toast.makeText(applicationContext, "단어를 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                    moveFocus(index, "word")
-                }
-                else if(array_meaning!!.contains("")) {
-                    var index = array_meaning!!.indexOf("") + 1
-                    Toast.makeText(applicationContext, "뜻을 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                    moveFocus(index, "meaning")
-                }*/
 
+                val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
+                val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
+                val et : SharedPreferences.Editor = sf.edit()
+                val count_before : Int = sf_countBefore.getInt("sets_before", 0)
+                et.putInt("sets", count_before + 1)
+                et.apply()
             }
         }
 
@@ -204,7 +215,7 @@ class MakeSetActivity : AppCompatActivity() {
         override fun onPostExecute(result: MutableList<Model>) {
             super.onPostExecute(result)
 
-            adapter = MakeSetAdapter(result, onItemClick)
+            adapter = MakeSetAdapter(result, onItemClick, false)
             MakeSet_recycler.adapter = adapter
             MakeSet_recycler.layoutManager = LinearLayoutManager(applicationContext)
 
@@ -225,55 +236,6 @@ class MakeSetActivity : AppCompatActivity() {
         }
     }
 
-    /*fun makeNav() : SlidingRootNav {
-
-        val dm : DisplayMetrics = applicationContext.resources.displayMetrics
-        val width = (dm.widthPixels * 0.35).toInt()
-        return builder.withMenuLayout(R.layout.menu)
-            .withDragDistancePx(width)
-            .withRootViewScale(0.6f)
-            .withRootViewElevation(10)
-            .withRootViewYTranslation(0)
-            .inject()
-    }
-
-    fun setDragStateListener() {
-
-        val listener : DragStateListener = object : DragStateListener{
-
-            override fun onDragEnd(isMenuOpened: Boolean) {
-                if(isMenuOpened)
-                    MakeSet_background.visibility = View.VISIBLE
-                else
-                    MakeSet_background.visibility = View.INVISIBLE
-            }
-
-            override fun onDragStart() {
-            }
-
-        }
-        builder.addDragStateListener(listener)
-    }*/
-
-    /*private fun removeItem(position : Int) {
-        array_word!!.removeAt(position)
-        array_meaning!!.removeAt(position)
-    }
-
-    fun deleteItems(array_selected : ArrayList<Int>){
-        if(array_selected.size > 1)
-            Collections.sort(array_selected, AscendingInteger())
-        array_selected.forEach {
-            removeItem(it)
-        }
-    }
-
-    internal inner class AscendingInteger : Comparator<Int> { //오름차순으로 정렬
-        override fun compare(a: Int, b: Int): Int {
-            return b.compareTo(a)
-        }
-    }*/
-
     fun moveFocus(position : Int, what : String) {
         val imm : InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         MakeSet_recycler.scrollToPosition(position)
@@ -288,57 +250,6 @@ class MakeSetActivity : AppCompatActivity() {
                 MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).requestFocus()
                 imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title), 0)
             }
-        }, 50)
-        /*if(MakeSet_recycler.scrollState == RecyclerView.SCROLL_STATE_DRAGGING) {
-            if(what == "word") {
-                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).requestFocus()
-                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word), 0)
-            }
-            else if(what == "meaning") {
-                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).requestFocus()
-                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning), 0)
-            }
-            else if(what == "title") {
-                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).requestFocus()
-                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title), 0)
-            }
-        }*/
+        }, 100)
     }
-
-    /*private fun postAndNotifyAdapter(handler : Handler, recyclerView : RecyclerView) {
-        handler.post {
-            if(recyclerView.findViewHolderForAdapterPosition(adapter!!.getLastIndex()) != null) {
-                for(i in 1..adapter!!.getLastIndex()) {
-                    //val word = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).text.toString()
-                    val word = recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.findViewById<EditText>(R.id.MakeSet_word)?.text.toString()
-                    //val meaning = MakeSet_recycler.findViewHolderForAdapterPosition(i)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).text.toString()
-                    val meaning = recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.findViewById<EditText>(R.id.MakeSet_meaning)?.text.toString()
-                    array_word!!.add(word)
-                    array_meaning!!.add(meaning)
-                }
-                    //val title : String = MakeSet_recycler.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).text.toString()
-                    val title : String = recyclerView.findViewHolderForAdapterPosition(0)?.itemView?.findViewById<EditText>(R.id.MakeSet_title)?.text.toString()
-                    //val subtitle : String = MakeSet_recycler.findViewHolderForAdapterPosition(0)!!.itemView.findViewById<EditText>(R.id.MakeSet_subtitle).text.toString()
-                    val subtitle : String = recyclerView.findViewHolderForAdapterPosition(0)?.itemView?.findViewById<EditText>(R.id.MakeSet_subtitle)?.text.toString()
-
-                    if(title.isEmpty()) {
-                        Toast.makeText(applicationContext, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                        moveFocus(0, "title")
-                    }
-                    else if(array_word!!.contains("")) {
-                        var index = array_word!!.indexOf("") + 1
-                        Toast.makeText(applicationContext, "단어를 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                        moveFocus(index, "word")
-                    }
-                    else if(array_meaning!!.contains("")) {
-                        var index = array_meaning!!.indexOf("") + 1
-                        Toast.makeText(applicationContext, "뜻을 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                        moveFocus(index, "meaning")
-                    }
-            }
-            else {
-                postAndNotifyAdapter(handler, recyclerView)
-            }
-        }
-    }*/
 }

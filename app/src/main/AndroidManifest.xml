@@ -18,9 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".MakeSetActivity"
-            android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".SetActivity"></activity>
+        <activity android:name=".MakeSetActivity" />
         <activity android:name=".TextActivity" />
 
         <provider

@@ -39,7 +39,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="520dp"
                 android:id="@+id/Main_relative"
-
                 android:background="#ffffff"
                 >
 
@@ -102,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorBlack"
                     android:textSize="24sp"
-                    android:text="보유 중인 학습 세트 : 2개"
+                    android:text="보유 중인 학습 세트 : 0개"
                     android:id="@+id/textview_allSet_main"/>
 
                 <TextView
