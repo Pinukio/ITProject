@@ -35,6 +35,9 @@ class MakeSetActivity : AppCompatActivity() {
     private lateinit var onItemClick : OnItemCheckListener
     private var array_selected : ArrayList<Int>? = null
     private var acti : MakeSetActivity? = null
+    private var count = 0
+    private var title = ""
+    private var subtitle = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,8 +119,8 @@ class MakeSetActivity : AppCompatActivity() {
 
                 array_word = adapter!!.getWords()
                 array_meaning = adapter!!.getMeanings()
-                val title = adapter!!.getTitleText()
-                val subtitle = adapter!!.getSubtitleText()
+                title = adapter!!.getTitleText()
+                subtitle = adapter!!.getSubtitleText()
 
                 if(title.isEmpty()) {
                     Toast.makeText(applicationContext, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show()
@@ -141,14 +144,9 @@ class MakeSetActivity : AppCompatActivity() {
 
                 else {
                     dialog!!.show()
+                    addToDB(0)
 
-                    val db : FirebaseFirestore = FirebaseFirestore.getInstance()
-                    val email: String = FirebaseAuth.getInstance().currentUser!!.email.toString()
-
-                    var count = 0
-                    val tmp = db.collection("users").document(email).collection("sets").document(title)
-
-                    for(i in 0 until array_word!!.size) {
+                    /*for(i in 0 until array_word!!.size) {
                         //val map : HashMap<String, String> = HashMap()
                         //map["word"] = array_word!![i]
                         //map["meaning"] = array_meaning!![i]
@@ -168,6 +166,7 @@ class MakeSetActivity : AppCompatActivity() {
                                     intent.putExtra("title", title)
                                     intent.putExtra("subtitle", subtitle)
                                     startActivity(intent)
+                                    finish()
                                 }
                             }
                         count++
@@ -179,16 +178,11 @@ class MakeSetActivity : AppCompatActivity() {
                         "size" to count
                     )
 
-                    tmp.set(subMap)
+                    tmp.set(subMap)*/
 
                 }
 
-                val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
-                val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
-                val et : SharedPreferences.Editor = sf.edit()
-                val count_before : Int = sf_countBefore.getInt("sets_before", 0)
-                et.putInt("sets", count_before + 1)
-                et.apply()
+
             }
         }
 
@@ -251,5 +245,48 @@ class MakeSetActivity : AppCompatActivity() {
                 imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title), 0)
             }
         }, 100)
+    }
+
+
+    fun addToDB(i : Int) {
+        val db : FirebaseFirestore = FirebaseFirestore.getInstance()
+        val email: String = FirebaseAuth.getInstance().currentUser!!.email.toString()
+
+        val tmp = db.collection("users").document(email).collection("sets").document(title)
+        val map = hashMapOf(
+            "word" to array_word!![i],
+            "meaning" to array_meaning!![i],
+            "star" to false
+        )
+
+        tmp.collection("_").document(i.toString()).set(map)
+            .addOnSuccessListener {
+                count++
+                if(i == array_word!!.size - 1) {
+                    dialog!!.dismiss()
+                    val intent = Intent(this, SetActivity::class.java)
+                    val subMap = hashMapOf(
+                        "subtitle" to subtitle,
+                        "size" to count,
+                        "progress" to 0
+                    )
+                    tmp.set(subMap)
+
+                    val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
+                    val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
+                    val et : SharedPreferences.Editor = sf.edit()
+                    val count_before : Int = sf_countBefore.getInt("sets_before", 0)
+                    et.putInt("sets", count_before + 1)
+                    et.apply()
+
+                    intent.putExtra("title", title)
+                    intent.putExtra("subtitle", subtitle)
+                    startActivity(intent)
+                    finish()
+                }
+                else {
+                    addToDB(i + 1)
+                }
+            }
     }
 }

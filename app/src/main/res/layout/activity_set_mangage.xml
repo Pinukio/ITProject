@@ -63,7 +63,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            android:hint="  내 학습세트 관리"
+            android:hint="  내 학습세트 검색"
             android:focusable="auto">
 
         </EditText>

@@ -1,8 +1,5 @@
 package com.example.itproject
 
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,18 +9,17 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheckListener, val isEmpty : Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MakeSetAdapter(private val list : MutableList<Model>, private val onItemClick: OnItemCheckListener, private val isEmpty : Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var array_word : ArrayList<String>? = ArrayList()
-    var array_meaning : ArrayList<String>? = ArrayList()
-    var title : String = ""
-    var subtitle : String = ""
-    var textWatcher1 : MyTextWatcher = MyTextWatcher(0)
-    var textWatcher2 : MyTextWatcher = MyTextWatcher(1)
-    var list_tw3 : ArrayList<MyTextWatcher> = ArrayList()
-    var list_tw4 : ArrayList<MyTextWatcher> = ArrayList()
-    var array_selected : ArrayList<Int> = ArrayList()
-    var array_holder : ArrayList<CardTypeViewHolder> = ArrayList()
+    private var array_word : ArrayList<String>? = ArrayList()
+    private var array_meaning : ArrayList<String>? = ArrayList()
+    private var title : String = ""
+    private var subtitle : String = ""
+    private var array_selected : ArrayList<Int> = ArrayList()
+    private var array_holder : ArrayList<CardTypeViewHolder> = ArrayList()
+    private var titleCreated : Boolean = false
+    private var cardCreated : Boolean = false
+    private lateinit var titleHolder : TitleTypeViewHolder
 
     interface OnItemCheckListener {
         fun onItemCheck(index : Int)
@@ -56,51 +52,38 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
         when(item.type) {
 
             Model.TITLE_TYPE -> {
-
-                (holder as TitleTypeViewHolder).et_title.setText(item.text)
-                title = item.text
-                holder.et_subtitle.setText(item.text2)
-                subtitle = item.text2
-
+                if(!titleCreated) {
+                    (holder as TitleTypeViewHolder).et_title.setText(item.text)
+                    title = item.text
+                    holder.et_subtitle.setText(item.text2)
+                    subtitle = item.text2
+                    titleCreated = true
+                    titleHolder = holder
+                }
             }
 
             Model.CARD_TYPE -> {
 
-                (holder as CardTypeViewHolder).et_word.setText(item.text)
-                if(!isEmpty) {
-                    array_word!!.add(item.text)
-                    list_tw3.add(MyTextWatcher(2))
-                    array_meaning!!.add(item.text2)
-                    list_tw4.add(MyTextWatcher(3))
+                if(array_holder.size < position) {
+                    (holder as CardTypeViewHolder).et_word.setText(item.text)
+                    if(!isEmpty && !cardCreated) {
+                        array_word!!.add(item.text)
+                        array_meaning!!.add(item.text2)
+                        if(array_word!!.size == list.size - 1)
+                            cardCreated = true
+                    }
+                    holder.et_meaning.setText(item.text2)
+                    holder.checkbox.isChecked = false
+                    holder.checkbox.setOnClickListener {
+                        if(holder.checkbox.isChecked)
+                            onItemClick.onItemCheck(holder.adapterPosition)
+                        else
+                            onItemClick.onItemUncheck(holder.adapterPosition)
+
+                    }
+                    holder.et_word.requestFocus()
+                    array_holder.add(holder)
                 }
-
-                holder.et_meaning.setText(item.text2)
-                holder.checkbox.isChecked = false
-                holder.checkbox.setOnClickListener {
-                    if(holder.checkbox.isChecked)
-                        onItemClick.onItemCheck(holder.adapterPosition)
-                    else
-                        onItemClick.onItemUncheck(holder.adapterPosition)
-
-                }
-                holder.et_word.requestFocus()
-                array_holder.add(holder)
-
-                /*array_holder.add(holder as CardTypeViewHolder)
-                val index = position - 1
-                array_holder[index].et_word.setText(item.text)
-                array_holder[index].et_meaning.setText(item.text2)
-                array_holder[index].checkbox.isChecked = false
-
-                array_holder[index].checkbox.setOnClickListener {
-                    if(holder.checkbox.isChecked)
-                        onItemClick.onItemCheck(holder.adapterPosition)
-                    else
-                        onItemClick.onItemUncheck(holder.adapterPosition)
-
-                }
-                array_holder[index].et_word.requestFocus()*/
-
             }
         }
     }
@@ -126,12 +109,8 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
 
     private fun removeItem(position : Int) {
         val index = position - 1
-        array_holder[index].et_word.removeTextChangedListener(list_tw3[index])
-        array_holder[index].et_meaning.removeTextChangedListener(list_tw4[index])
         list.removeAt(position)
         array_holder.removeAt(index)
-        list_tw3.removeAt(index)
-        list_tw4.removeAt(index)
         array_word!!.removeAt(index)
         array_meaning!!.removeAt(index)
         notifyItemRemoved(position)
@@ -140,16 +119,9 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
     fun deleteItems(array_selected : ArrayList<Int>){
         if(array_selected.size > 1)
             Collections.sort(array_selected, AscendingInteger())
-        //this.array_selected = array_selected
         this.array_selected = ArrayList()
         array_selected.forEach {
             removeItem(it)
-            Log.i("1111", "!!!")
-        }
-        for(i in 0 until list_tw3.size) {
-            Log.i("2222", i.toString())
-            list_tw3[i].updatePosition(i)
-            list_tw4[i].updatePosition(i)
         }
     }
 
@@ -162,24 +134,29 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
     fun addItem() : Int{
         array_word!!.add("")
         array_meaning!!.add("")
-        list_tw3.add(MyTextWatcher(2))
-        list_tw4.add(MyTextWatcher(3))
-        //list_tw3[list.size - 1].updatePosition(list.size - 1)
-        //list_tw4[list.size - 1].updatePosition(list.size - 1)
-        for(i in 0 until list.size) {
-            list_tw3[i].updatePosition(i)
-            list_tw4[i].updatePosition(i)
-        }
         list.add(Model(Model.CARD_TYPE, "", ""))
         notifyItemInserted(list.size - 1)
         return getLastIndex()
     }
 
-    fun getLastIndex() : Int {
+    private fun getLastIndex() : Int {
         return list.size - 1
     }
 
+    private fun setArray() {
+        for(i in 0 until array_holder.size) {
+            array_word!![i] = array_holder[i].et_word.text.toString()
+            array_meaning!![i] = array_holder[i].et_meaning.text.toString()
+        }
+    }
+
+    private fun setTitleText() {
+        title = titleHolder.et_title.text.toString()
+        subtitle = titleHolder.et_subtitle.text.toString()
+    }
+
     fun getWords() : ArrayList<String> {
+        setArray()
         return array_word!!
     }
 
@@ -188,6 +165,7 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
     }
 
     fun getTitleText() : String {
+        setTitleText()
         return title
     }
 
@@ -195,62 +173,21 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
         return subtitle
     }
 
-    inner class MyTextWatcher(val spec : Int) : TextWatcher {
-        var position : Int? = null
-        override fun beforeTextChanged(
-            s: CharSequence,
-            start: Int,
-            count: Int,
-            after: Int
-        ) {
-        }
-
-        override fun onTextChanged(
-            s: CharSequence,
-            start: Int,
-            before: Int,
-            count: Int
-        ) {
-        }
-
-        override fun afterTextChanged(s: Editable) {
-                when(spec) {
-                    0 -> title = s.toString()
-                    1 -> subtitle = s.toString()
-                    2 -> array_word!![position!!] = s.toString()
-                    3 -> array_meaning!![position!!] = s.toString()
-                }
-        }
-        fun updatePosition(pos : Int) {
-            position = pos
-        }
-    }
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
         if(holder.adapterPosition == 0) {
             (holder as TitleTypeViewHolder).et_title.setText(title)
             holder.et_subtitle.setText(subtitle)
-            holder.et_title.addTextChangedListener(textWatcher1)
-            holder.et_subtitle.addTextChangedListener(textWatcher2)
         }
         else {
             val index = holder.adapterPosition - 1
             val word = array_word!![index]
             (holder as CardTypeViewHolder).et_word.setText(word)
-            //array_holder[index].et_word.setText(index.toString())
-            //array_holder[index].et_word.addTextChangedListener(list_tw3[index])
-
             val meaning = array_meaning!![index]
-            //array_holder[index].et_meaning.setText(meaning)
-            //array_holder[index].et_meaning.addTextChangedListener(list_tw4[index])
-
             holder.et_meaning.setText(meaning)
-            holder.et_word.addTextChangedListener(list_tw3[index])
-            holder.et_meaning.addTextChangedListener(list_tw4[index])
             if(array_selected.contains(holder.adapterPosition)) {
                 holder.checkbox.isChecked = true
             }
-            //array_holder[index] = holder
         }
     }
 
@@ -258,9 +195,7 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
         super.onViewDetachedFromWindow(holder)
 
         if(holder.adapterPosition == 0) {
-            (holder as TitleTypeViewHolder).et_title.removeTextChangedListener(textWatcher1)
-            holder.et_subtitle.removeTextChangedListener(textWatcher2)
-            title = holder.et_title.text.toString()
+            title = (holder as TitleTypeViewHolder).et_title.text.toString()
             subtitle = holder.et_subtitle.text.toString()
         }
 
@@ -268,13 +203,6 @@ class MakeSetAdapter(val list : MutableList<Model>, val onItemClick: OnItemCheck
             val index = holder.adapterPosition - 1
             array_word!![index] = (holder as CardTypeViewHolder).et_word.text.toString()
             array_meaning!![index] = holder.et_meaning.text.toString()
-            holder.et_word.removeTextChangedListener(list_tw3[index])
-            holder.et_meaning.removeTextChangedListener(list_tw4[index])
-
-            /*array_word!![index] = array_holder[index].et_word.text.toString()
-            array_meaning!![index] = array_holder[index].et_meaning.text.toString()
-            array_holder[index].et_word.removeTextChangedListener(list_tw3[index])
-            array_holder[index].et_meaning.removeTextChangedListener(list_tw4[index])*/
         }
     }
 

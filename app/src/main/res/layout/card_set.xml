@@ -7,6 +7,7 @@
     android:layout_marginStart="20dp"
     android:layout_marginEnd="20dp"
     android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
     app:cardElevation="5dp">
 
     <LinearLayout
@@ -26,13 +27,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="hello"
-                android:textSize="23sp"
+                android:textSize="18sp"
                 android:textColor="#000000"
                 android:id="@+id/Set_word"/>
 
             <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/star_white"
                 android:layout_alignParentRight="true"
                 android:id="@+id/Set_star"/>

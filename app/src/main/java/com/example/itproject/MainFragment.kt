@@ -53,7 +53,7 @@ class MainFragment : Fragment() {
 
         background_view.alpha = 1f
 
-        (activity as MainActivity).setToolBarColor("#00273c")
+        //(activity as MainActivity).setToolBarColor("#00273c")
 
         val sf1 : SharedPreferences = activity!!.getSharedPreferences("count_mainFragment", Context.MODE_PRIVATE)
 
@@ -81,7 +81,7 @@ class MainFragment : Fragment() {
         mainButton.setOnClickListener {
 
             //Main_toolbar.setBackgroundColor(Color.parseColor("#00273c"))
-            (activity as MainActivity).setToolBarColor("#2196F3")
+            //(activity as MainActivity).setToolBarColor("#2196F3")
 
             val fragmentManager : FragmentManager= activity!!.supportFragmentManager
 
@@ -112,7 +112,7 @@ class MainFragment : Fragment() {
 
         background_view.setOnClickListener {
 
-            (activity as MainActivity).setToolBarColor("#2196F3")
+            //(activity as MainActivity).setToolBarColor("#2196F3")
 
             val fragmentManager : FragmentManager= activity!!.supportFragmentManager
 
@@ -211,7 +211,7 @@ class MainFragment : Fragment() {
 
         val temp : Int = (((size_mainButton - 80) / 2) *scale + 0.5f).toInt()
 
-        marginParams_mainButton.topMargin = (420 * scale + 0.5f).toInt() - temp
+        marginParams_mainButton.topMargin = (475 * scale + 0.5f).toInt() - temp
         marginParams_cameraButton.leftMargin = (60 * scale + 0.5f).toInt() - temp
         marginParams_pencilButton.rightMargin = (60 * scale + 0.5f).toInt() - temp
 

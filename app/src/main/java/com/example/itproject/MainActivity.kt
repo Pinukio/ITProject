@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val firebaseAuth = FirebaseAuth.getInstance()
-        //firebaseAuth.signOut()
         if(firebaseAuth.currentUser == null) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -104,9 +103,6 @@ class MainActivity : AppCompatActivity() {
             mainButton.setOnClickListener {
 
                 if(nav.isMenuClosed) {
-
-                    //Main_toolbar.setBackgroundColor(Color.parseColor("#00273c"))
-
                     fragmentTransaction = supportFragmentManager.beginTransaction()
                     fragmentTransaction.add(R.id.Main_frame, MainFragment()).commit()
 
@@ -129,12 +125,7 @@ class MainActivity : AppCompatActivity() {
             Main_background.setOnClickListener{
                 nav.closeMenu()
             }
-
-            /*Main_frame.setOnClickListener {
-                if(nav.isMenuOpened) nav.closeMenu()
-            }*/
             Menu_home.setOnClickListener {
-                //startActivity(Intent(this, MainActivity::class.java))
                 nav.closeMenu()
 
             }
@@ -154,7 +145,6 @@ class MainActivity : AppCompatActivity() {
             if(count == 1) {
                 val mainFragment : MainFragment = supportFragmentManager.findFragmentById(R.id.Main_frame) as MainFragment
                 mainFragment.back()
-                setToolBarColor("#2196f3")
             }
 
             if(count == 2) {
@@ -170,7 +160,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun makeNav() : SlidingRootNav{
+    private fun makeNav() : SlidingRootNav{
 
         val dm : DisplayMetrics = applicationContext.resources.displayMetrics
         val width = (dm.widthPixels * 0.35).toInt()
@@ -181,10 +171,6 @@ class MainActivity : AppCompatActivity() {
             .withRootViewYTranslation(0)
             .withToolbarMenuToggle(Main_toolbar)
             .inject()
-    }
-
-    fun setToolBarColor(s : String) {
-        Main_toolbar.setBackgroundColor(Color.parseColor(s))
     }
 
     fun setDragStateListener() {
@@ -204,10 +190,6 @@ class MainActivity : AppCompatActivity() {
 
         }
         builder.addDragStateListener(listener)
-    }
-
-    fun setButton() {
-        actionBar.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onResume() {

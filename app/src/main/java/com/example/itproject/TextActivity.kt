@@ -55,7 +55,6 @@ class TextActivity : AppCompatActivity() {
 
         if (!assetsCopied) {
             copyTask().execute()
-            Log.i("흠", "터")
         }
         else OCRTask().execute()
 
@@ -65,6 +64,7 @@ class TextActivity : AppCompatActivity() {
                 val intent = Intent(applicationContext, MakeSetActivity::class.java)
                 intent.putExtra("array_word", array_word)
                 startActivity(intent)
+                finish()
             }
 
         }

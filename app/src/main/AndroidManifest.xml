@@ -18,10 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".SetActivity"></activity>
+        <activity android:name=".SetActivity"/>
         <activity android:name=".MakeSetActivity" />
         <activity android:name=".TextActivity" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.itproject.fileprovider"

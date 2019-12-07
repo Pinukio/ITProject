@@ -81,7 +81,7 @@ class PictureFragment : Fragment() {
             params_mainButton.width = (80 * scale + 0.5f).toInt()
             params_mainButton.height = (80 * scale + 0.5f).toInt()
 
-            marginParams_mainButton.topMargin = (420 * scale + 0.5f).toInt()
+            marginParams_mainButton.topMargin = (475 * scale + 0.5f).toInt()
             marginParams_cameraButton.leftMargin = (60 * scale + 0.5f).toInt()
             marginParams_pencilButton.rightMargin = (60 * scale + 0.5f).toInt()
 
@@ -104,7 +104,7 @@ class PictureFragment : Fragment() {
                 fragmentManager.beginTransaction().remove(this).commit()
             }, anim_reduction.duration)
 
-            (activity as MainActivity).setToolBarColor("#2196F3")
+            //(activity as MainActivity).setToolBarColor("#2196F3")
 
         }
 

@@ -22,6 +22,11 @@ class SetActivity : AppCompatActivity() {
     private val array_word : ArrayList<String> = ArrayList()
     private val array_meaning : ArrayList<String> = ArrayList()
     private lateinit var tmp : DocumentReference
+    private var list : MutableList<Model>? = null
+    private var title : String = ""
+    private var subtitle : String = ""
+    private lateinit var db : FirebaseFirestore
+    private var email = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,33 +43,26 @@ class SetActivity : AppCompatActivity() {
             dialog = alertBuilder.create()
             dialog!!.show()
 
-            val db : FirebaseFirestore = FirebaseFirestore.getInstance()
-            val email = FirebaseAuth.getInstance().currentUser!!.email
-            val title = intent.getStringExtra("title")
-            val subtitle = intent.getStringExtra("subtitle")
-            tmp = db.collection("users").document(email!!).collection("sets").document(title)
+            db = FirebaseFirestore.getInstance()
+            email = FirebaseAuth.getInstance().currentUser!!.email!!
+            title = intent.getStringExtra("title")!!
+            subtitle = intent.getStringExtra("subtitle")!!
+            tmp = db.collection("users").document(email).collection("sets").document(title)
             tmp.get()
                 .addOnSuccessListener {
                     size = (it["size"] as Long).toInt()
                     for(i in 0 until size) {
                         array_word.add("")
                         array_meaning.add("")
-
-                        setArray(i)
                     }
-                    SetActivity_title.text = title
-                    if(subtitle != "")
-                        SetActivity_subtitle.text = subtitle
-                    else
-                        SetActivity_subtitle.visibility = View.GONE
-
-                    SetActivity_count.text = "단어 ${size}개"
+                    if(size != 0)
+                        setArray(0)
                 }
         }
 
     }
 
-    fun setArray(i : Int) {
+    private fun setArray(i : Int) {
         tmp.collection("_").document(i.toString()).get()
             .addOnSuccessListener {
                 array_word[i] = it["word"].toString()
@@ -73,12 +71,27 @@ class SetActivity : AppCompatActivity() {
                     setRecycler()
                     dialog!!.dismiss()
                 }
+                else {
+                    setArray(i + 1)
+                }
             }
     }
 
-    fun setRecycler() {
+    private fun setRecycler() {
         SetActivity_recycler.layoutManager = LinearLayoutManager(this)
-        val adapter = SetAdapter(array_word, array_meaning)
-        SetActivity_recycler.adapter = adapter
+        list = mutableListOf<Model>().apply {
+            add(Model(Model.TITLE_TYPE, title, subtitle))
+            for(i in 0 until array_word.size) {
+                add(Model(Model.CARD_TYPE, array_word[i], array_meaning[i]))
+            }
+        }
+        var name = ""
+        db.collection("users").document(email).get()
+            .addOnSuccessListener {
+                name = it["name"].toString()
+                val adapter = SetAdapter(list!!, name)
+                SetActivity_recycler.adapter = adapter
+            }
+
     }
 }
