@@ -15,14 +15,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="5"
             android:hint="  내 학습세트 검색"
-            android:focusable="auto"
-            android:id="@+id/ManageSet_edit">
+            android:id="@+id/ManageSet_edit"
+            android:paddingBottom="15dp">
 
         </EditText>
         <ImageView
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:src="@drawable/search_"
+            android:src="@drawable/search"
             android:layout_weight="1"
             android:layout_marginBottom="5dp"
             android:id="@+id/ManageSet_search">
@@ -35,8 +35,9 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:gravity="right|center"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="10dp"
         >
 
         <CheckBox
@@ -47,9 +48,9 @@
             android:id="@+id/ManageSet_checkAll"/>
 
         <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/trash"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/trash_"
             android:layout_marginLeft="3dp"
             android:id="@+id/ManageSet_trash"/>
 

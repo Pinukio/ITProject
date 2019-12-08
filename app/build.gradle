@@ -52,5 +52,4 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation 'link.fls:swipestack:0.3.0'
     implementation 'com.google.firebase:firebase-firestore:21.3.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta3'
 }

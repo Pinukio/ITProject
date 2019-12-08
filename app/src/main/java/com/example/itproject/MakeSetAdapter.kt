@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MakeSetAdapter(private val list : MutableList<Model>, private val onItemClick: OnItemCheckListener, private val isEmpty : Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCheck: OnItemCheckListener, private val isEmpty : Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var array_word : ArrayList<String>? = ArrayList()
     private var array_meaning : ArrayList<String>? = ArrayList()
@@ -76,9 +76,9 @@ class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCl
                     holder.checkbox.isChecked = false
                     holder.checkbox.setOnClickListener {
                         if(holder.checkbox.isChecked)
-                            onItemClick.onItemCheck(holder.adapterPosition)
+                            onItemCheck.onItemCheck(holder.adapterPosition)
                         else
-                            onItemClick.onItemUncheck(holder.adapterPosition)
+                            onItemCheck.onItemUncheck(holder.adapterPosition)
 
                     }
                     holder.et_word.requestFocus()
@@ -116,13 +116,22 @@ class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCl
         notifyItemRemoved(position)
     }
 
-    fun deleteItems(array_selected : ArrayList<Int>){
+    /*fun deleteItems(array_selected : ArrayList<Int>){
         if(array_selected.size > 1)
             Collections.sort(array_selected, AscendingInteger())
         this.array_selected = ArrayList()
         array_selected.forEach {
             removeItem(it)
         }
+    }*/
+
+    fun deleteItems(){
+        if(array_selected.size > 1)
+            Collections.sort(array_selected, AscendingInteger())
+        array_selected.forEach {
+            removeItem(it)
+        }
+        array_selected = ArrayList()
     }
 
     internal inner class AscendingInteger : Comparator<Int> { //정렬

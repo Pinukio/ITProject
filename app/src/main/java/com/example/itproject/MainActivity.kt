@@ -15,6 +15,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -30,12 +31,13 @@ import kotlinx.android.synthetic.main.menu.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mainButton : CircleImageView
-    private lateinit var fragmentTransaction : FragmentTransaction
+    private lateinit var fragmentManager : FragmentManager
     private lateinit var nav : SlidingRootNav
     private lateinit var actionBar : ActionBar
     private lateinit var builder : SlidingRootNavBuilder
     private lateinit var dialog : AlertDialog
     private var count = 0
+    private var where : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,12 +46,14 @@ class MainActivity : AppCompatActivity() {
         if(firebaseAuth.currentUser == null) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         else {
             setContentView(R.layout.activity_main)
-            Main_toolbar.setTitleTextColor(Color.WHITE)
+            //Main_toolbar.setTitleTextColor(Color.WHITE)
             setSupportActionBar(Main_toolbar)
+            fragmentManager = supportFragmentManager
 
             val alertBuilder : AlertDialog.Builder = AlertDialog.Builder(this)
             val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -81,9 +85,9 @@ class MainActivity : AppCompatActivity() {
             actionBar.setDisplayShowCustomEnabled(true)
 
             actionBar.setDisplayShowTitleEnabled(false)
-            val stateListAnimator = StateListAnimator()
-            stateListAnimator.addState(IntArray(0), ObjectAnimator.ofFloat(Main_appbarlayout, "elevation", 0f))
-            Main_appbarlayout.stateListAnimator = stateListAnimator
+            //val stateListAnimator = StateListAnimator()
+            //stateListAnimator.addState(IntArray(0), ObjectAnimator.ofFloat(Main_appbarlayout, "elevation", 0f))
+            //Main_appbarlayout.stateListAnimator = stateListAnimator
 
             val permissionListener = object : PermissionListener
             {
@@ -103,8 +107,7 @@ class MainActivity : AppCompatActivity() {
             mainButton.setOnClickListener {
 
                 if(nav.isMenuClosed) {
-                    fragmentTransaction = supportFragmentManager.beginTransaction()
-                    fragmentTransaction.add(R.id.Main_frame, MainFragment()).commit()
+                    fragmentManager.beginTransaction().add(R.id.Main_frame, MainFragment()).commit()
 
                     val sf : SharedPreferences = getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
                     val sf1 : SharedPreferences = getSharedPreferences("count_mainFragment", Context.MODE_PRIVATE)
@@ -126,8 +129,35 @@ class MainActivity : AppCompatActivity() {
                 nav.closeMenu()
             }
             Menu_home.setOnClickListener {
+                when(where) {
+                    0 -> { // home
+                        nav.closeMenu()
+                    }
+                    1 -> {
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("ManageSet")!!).commit()
+                        setToolbarTitle("")
+                        nav.closeMenu()
+                        where = 0
+                    }
+                }
+            }
+            Menu_manage.setOnClickListener {
+                where = 1
+                if(fragmentManager.findFragmentByTag("ManageSet") == null) {
+                    fragmentManager.beginTransaction().add(R.id.Main_frame_sub, ManageSetFragment(), "ManageSet").commit()
+                }
+                else {
+                    fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("ManageSet")!!).commit()
+                }
+                setToolbarTitle("학습 세트 관리")
                 nav.closeMenu()
 
+            }
+
+
+            Menu_logout.setOnClickListener {
+                firebaseAuth.signOut()
+                startActivity(Intent(this, LoginActivity::class.java))
             }
         }
     }
@@ -166,22 +196,23 @@ class MainActivity : AppCompatActivity() {
         val width = (dm.widthPixels * 0.35).toInt()
         return builder.withMenuLayout(R.layout.menu)
             .withDragDistancePx(width)
-            .withRootViewScale(0.6f)
+            .withRootViewScale(0.7f)
             .withRootViewElevation(10)
-            .withRootViewYTranslation(0)
+            .withRootViewYTranslation(4)
             .withToolbarMenuToggle(Main_toolbar)
             .inject()
     }
 
-    fun setDragStateListener() {
+    private fun setDragStateListener() {
 
         val listener : DragStateListener = object : DragStateListener {
 
             override fun onDragEnd(isMenuOpened: Boolean) {
                 if(isMenuOpened)
                     Main_background.visibility = View.VISIBLE
-                else
+                else {
                     Main_background.visibility = View.INVISIBLE
+                }
 
             }
 
@@ -197,5 +228,22 @@ class MainActivity : AppCompatActivity() {
         val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
         val count_ : Int = sf.getInt("sets", count)
         textview_allSet_main.text = "보유 중인 학습 세트 : ${count_}개"
+        if(count_ != count) {
+            refreshMS()
+        }
+    }
+
+    private fun setToolbarTitle(s : String) {
+        Main_toolbar_title.text = s
+    }
+
+    fun refreshMS() {
+        var f = fragmentManager.findFragmentByTag("ManageSet")
+        if(f != null) {
+            fragmentManager.beginTransaction().remove(f).commit()
+            fragmentManager.beginTransaction().add(ManageSetFragment(), "ManageSet")
+            f = fragmentManager.findFragmentByTag("ManageSet")
+            fragmentManager.beginTransaction().hide(f!!).commit()
+        }
     }
 }

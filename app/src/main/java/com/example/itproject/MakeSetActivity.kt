@@ -22,7 +22,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class MakeSetActivity : AppCompatActivity() {
 
@@ -33,8 +32,8 @@ class MakeSetActivity : AppCompatActivity() {
     private var dialog : AlertDialog? = null
     private var array_null : ArrayList<Int>? = null // 뜻이 리턴되지 않은 단어들의 인덱스 저장
     private lateinit var onItemClick : OnItemCheckListener
-    private var array_selected : ArrayList<Int>? = null
-    private var acti : MakeSetActivity? = null
+    //private var array_selected : ArrayList<Int>? = null
+    //private var acti : MakeSetActivity? = null
     private var count = 0
     private var title = ""
     private var subtitle = ""
@@ -47,7 +46,7 @@ class MakeSetActivity : AppCompatActivity() {
         array_word = intent.getStringArrayListExtra("array_word")
         array_meaning = ArrayList()
         array_null = ArrayList()
-        array_selected = ArrayList()
+        //array_selected = ArrayList()
 
         val alertBuilder : AlertDialog.Builder = AlertDialog.Builder(this)
         val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -59,21 +58,21 @@ class MakeSetActivity : AppCompatActivity() {
             finish()
         }
 
-        onItemClick = object:OnItemCheckListener {
+        onItemClick = object : OnItemCheckListener {
 
             override fun onItemCheck(index : Int) {
-                array_selected!!.add(index)
+                //array_selected!!.add(index)
                 adapter!!.setSelectedArray(index, true)
             }
 
             override fun onItemUncheck(index: Int) {
-                array_selected!!.remove(index)
+                //array_selected!!.remove(index)
                 adapter!!.setSelectedArray(index, false)
             }
         }
 
         if(array_word != null) {
-            acti = this
+            //acti = this
             dialog!!.show()
 
             for(i in 0 until array_word!!.size)
@@ -110,8 +109,9 @@ class MakeSetActivity : AppCompatActivity() {
         }
 
         MakeSet_trash.setOnClickListener {
-            adapter!!.deleteItems(array_selected!!)
-            array_selected = ArrayList()
+            //adapter!!.deleteItems(array_selected!!)
+            adapter!!.deleteItems()
+            //array_selected = ArrayList()
         }
 
         MakeSet_checkbtn.setOnClickListener {
