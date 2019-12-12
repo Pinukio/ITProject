@@ -66,9 +66,7 @@ class TextActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
-
         }
-
         TextACtivity_back.setOnClickListener {
             finish()
         }

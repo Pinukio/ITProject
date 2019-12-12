@@ -104,8 +104,6 @@ class PictureFragment : Fragment() {
                 fragmentManager.beginTransaction().remove(this).commit()
             }, anim_reduction.duration)
 
-            //(activity as MainActivity).setToolBarColor("#2196F3")
-
         }
 
         backgroundView.setOnClickListener {

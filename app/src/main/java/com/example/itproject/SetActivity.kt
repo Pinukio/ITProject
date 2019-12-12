@@ -58,6 +58,10 @@ class SetActivity : AppCompatActivity() {
                     if(size != 0)
                         setArray(0)
                 }
+
+            SetActivity_back.setOnClickListener {
+                finish()
+            }
         }
 
     }
@@ -85,7 +89,7 @@ class SetActivity : AppCompatActivity() {
                 add(Model(Model.CARD_TYPE, array_word[i], array_meaning[i]))
             }
         }
-        var name = ""
+        var name: String
         db.collection("users").document(email).get()
             .addOnSuccessListener {
                 name = it["name"].toString()

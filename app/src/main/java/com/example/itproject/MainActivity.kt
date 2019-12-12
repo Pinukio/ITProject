@@ -68,11 +68,12 @@ class MainActivity : AppCompatActivity() {
                     if(it.isSuccessful) {
                         for(document in it.result!!) {
                             count++
+                            Log.i("????", count.toString())
                         }
-                        val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
-                        val et: SharedPreferences.Editor = sf_countBefore.edit()
-                        et.putInt("sets_before", count)
-                        et.apply()
+                        //val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
+                        val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
+                        val et: SharedPreferences.Editor = sf.edit()
+                        et.putInt("sets", count).apply()
                         val tmp = "보유 중인 학습 세트 : ${count}개"
                         textview_allSet_main.text = tmp
                         dialog.dismiss()
@@ -138,6 +139,8 @@ class MainActivity : AppCompatActivity() {
                         setToolbarTitle("")
                         nav.closeMenu()
                         where = 0
+                        count = getSetsSize()
+                        textview_allSet_main.text = "보유 중인 학습 세트 : ${count}개"
                     }
                 }
             }
@@ -213,31 +216,35 @@ class MainActivity : AppCompatActivity() {
                 else {
                     Main_background.visibility = View.INVISIBLE
                 }
-
             }
-
-            override fun onDragStart() {
-            }
-
+            override fun onDragStart() {}
         }
         builder.addDragStateListener(listener)
     }
 
     override fun onResume() {
         super.onResume()
-        val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
-        val count_ : Int = sf.getInt("sets", count)
+        val count_ : Int = getSetsSize()
         textview_allSet_main.text = "보유 중인 학습 세트 : ${count_}개"
         if(count_ != count) {
+            /*val f = fragmentManager.findFragmentByTag("ManageSet")
+            if(f != null) {
+                fragmentManager.beginTransaction().remove(f).commit()
+                fragmentManager.beginTransaction().add(R.id.Main_frame_sub, ManageSetFragment(), "ManageSet").commit()
+
+            }
+            Log.i(count.toString(), count_.toString())*/
             refreshMS()
+            //count = count_
+
         }
     }
 
-    private fun setToolbarTitle(s : String) {
+    fun setToolbarTitle(s : String) {
         Main_toolbar_title.text = s
     }
 
-    fun refreshMS() {
+    private fun refreshMS() {
         var f = fragmentManager.findFragmentByTag("ManageSet")
         if(f != null) {
             fragmentManager.beginTransaction().remove(f).commit()
@@ -246,4 +253,10 @@ class MainActivity : AppCompatActivity() {
             fragmentManager.beginTransaction().hide(f!!).commit()
         }
     }
+
+    private fun getSetsSize() : Int{
+        val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
+        return sf.getInt("sets", 0)
+    }
+
 }

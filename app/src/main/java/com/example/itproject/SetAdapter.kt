@@ -1,6 +1,5 @@
 package com.example.itproject
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 
 class SetAdapter(private val list : MutableList<Model>, private val name : String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -52,21 +50,7 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = list[position]
-        //val index = holder.adapterPosition
-        /*(holder as MyViewHolder).word.text = array_word[index]
-        holder.meaning.text = array_meaning[index]
-        holder.star.setOnClickListener {
-            if(!array_star[index]) {
-                //it.setBackgroundResource(R.drawable.star_yellow)
-                holder.star.setImageResource(R.drawable.star_yellow)
-                array_star[index] = true
-            }
-            else {
-                //it.setBackgroundResource(R.drawable.star_white)
-                holder.star.setImageResource(R.drawable.star_white)
-                array_star[index] = false
-            }
-        }*/
+
         when(item.type) {
             Model.TITLE_TYPE -> {
                 if(!titleCreated) {

@@ -3,7 +3,6 @@ package com.example.itproject
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -15,7 +14,6 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import de.hdodenhof.circleimageview.CircleImageView
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainFragment : Fragment() {
 
@@ -53,8 +51,6 @@ class MainFragment : Fragment() {
 
         background_view.alpha = 1f
 
-        //(activity as MainActivity).setToolBarColor("#00273c")
-
         val sf1 : SharedPreferences = activity!!.getSharedPreferences("count_mainFragment", Context.MODE_PRIVATE)
 
         count_mainFragment = sf1.getInt("count",0)
@@ -79,9 +75,6 @@ class MainFragment : Fragment() {
         }
 
         mainButton.setOnClickListener {
-
-            //Main_toolbar.setBackgroundColor(Color.parseColor("#00273c"))
-            //(activity as MainActivity).setToolBarColor("#2196F3")
 
             val fragmentManager : FragmentManager= activity!!.supportFragmentManager
 
@@ -111,8 +104,6 @@ class MainFragment : Fragment() {
         //버튼 외에 다른 부분 클릭 처리
 
         background_view.setOnClickListener {
-
-            //(activity as MainActivity).setToolBarColor("#2196F3")
 
             val fragmentManager : FragmentManager= activity!!.supportFragmentManager
 
@@ -155,8 +146,6 @@ class MainFragment : Fragment() {
 
         pencilButton.setOnClickListener {
             startActivity(Intent(activity, MakeSetActivity::class.java))
-            /*fragmentManager!!.beginTransaction().remove(this).commit()
-            fragmentManager!!.beginTransaction().add(R.id.Main_frame, MakeSetFragment(null)).commit()*/
         }
 
         return view

@@ -32,8 +32,6 @@ class MakeSetActivity : AppCompatActivity() {
     private var dialog : AlertDialog? = null
     private var array_null : ArrayList<Int>? = null // 뜻이 리턴되지 않은 단어들의 인덱스 저장
     private lateinit var onItemClick : OnItemCheckListener
-    //private var array_selected : ArrayList<Int>? = null
-    //private var acti : MakeSetActivity? = null
     private var count = 0
     private var title = ""
     private var subtitle = ""
@@ -61,18 +59,15 @@ class MakeSetActivity : AppCompatActivity() {
         onItemClick = object : OnItemCheckListener {
 
             override fun onItemCheck(index : Int) {
-                //array_selected!!.add(index)
                 adapter!!.setSelectedArray(index, true)
             }
 
             override fun onItemUncheck(index: Int) {
-                //array_selected!!.remove(index)
                 adapter!!.setSelectedArray(index, false)
             }
         }
 
         if(array_word != null) {
-            //acti = this
             dialog!!.show()
 
             for(i in 0 until array_word!!.size)
@@ -109,9 +104,7 @@ class MakeSetActivity : AppCompatActivity() {
         }
 
         MakeSet_trash.setOnClickListener {
-            //adapter!!.deleteItems(array_selected!!)
             adapter!!.deleteItems()
-            //array_selected = ArrayList()
         }
 
         MakeSet_checkbtn.setOnClickListener {
@@ -145,44 +138,7 @@ class MakeSetActivity : AppCompatActivity() {
                 else {
                     dialog!!.show()
                     addToDB(0)
-
-                    /*for(i in 0 until array_word!!.size) {
-                        //val map : HashMap<String, String> = HashMap()
-                        //map["word"] = array_word!![i]
-                        //map["meaning"] = array_meaning!![i]
-                        val map = hashMapOf(
-                            "word" to array_word!![i],
-                            "meaning" to array_meaning!![i],
-                            "star" to false
-                        )
-
-                        tmp.collection("_").document(i.toString()).set(map)
-                            .addOnSuccessListener {
-                                if(i == array_word!!.size - 1) {
-                                    dialog!!.dismiss()
-                                    val intent = Intent(this, SetActivity::class.java)
-                                    //intent.putExtra("array_word", array_word)
-                                    //intent.putExtra("array_meaning", array_meaning)
-                                    intent.putExtra("title", title)
-                                    intent.putExtra("subtitle", subtitle)
-                                    startActivity(intent)
-                                    finish()
-                                }
-                            }
-                        count++
-                    }
-                    //subMap["subtitle"] = subtitle
-                    //subMap["size"] = count
-                    val subMap = hashMapOf(
-                        "subtitle" to subtitle,
-                        "size" to count
-                    )
-
-                    tmp.set(subMap)*/
-
                 }
-
-
             }
         }
 
@@ -248,7 +204,7 @@ class MakeSetActivity : AppCompatActivity() {
     }
 
 
-    fun addToDB(i : Int) {
+    private fun addToDB(i : Int) {
         val db : FirebaseFirestore = FirebaseFirestore.getInstance()
         val email: String = FirebaseAuth.getInstance().currentUser!!.email.toString()
 
@@ -273,11 +229,9 @@ class MakeSetActivity : AppCompatActivity() {
                     tmp.set(subMap)
 
                     val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
-                    val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
                     val et : SharedPreferences.Editor = sf.edit()
-                    val count_before : Int = sf_countBefore.getInt("sets_before", 0)
-                    et.putInt("sets", count_before + 1)
-                    et.apply()
+                    val count_before = sf.getInt("sets", 0)
+                    et.putInt("sets", count_before + 1).apply()
 
                     intent.putExtra("title", title)
                     intent.putExtra("subtitle", subtitle)

@@ -26,7 +26,5 @@ interface RetrofitService {
             return retrofit.create(RetrofitService::class.java)
         }
     }
-
-
 }
 

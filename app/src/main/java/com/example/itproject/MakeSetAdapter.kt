@@ -116,15 +116,6 @@ class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCh
         notifyItemRemoved(position)
     }
 
-    /*fun deleteItems(array_selected : ArrayList<Int>){
-        if(array_selected.size > 1)
-            Collections.sort(array_selected, AscendingInteger())
-        this.array_selected = ArrayList()
-        array_selected.forEach {
-            removeItem(it)
-        }
-    }*/
-
     fun deleteItems(){
         if(array_selected.size > 1)
             Collections.sort(array_selected, AscendingInteger())

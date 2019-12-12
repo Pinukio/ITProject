@@ -75,34 +75,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/MakeSet_toolbar"
-
         android:id="@+id/MakeSet_recycler"
         />
 
-       <!-- <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:background="@color/colorMain"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/MakeSet_bottom"
-            >
-
-        </RelativeLayout>
--->
-        <!--<de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/plus2"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="15dp"
-            android:layout_marginBottom="15dp"
-            app:civ_border_color="#ffffff"
-            app:civ_border_width="7dp"
-            android:id="@+id/MakeSet_addbtn"
-            />
-
--->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -110,8 +85,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         app:srcCompat="@drawable/plus3"
-        android:layout_marginBottom="15dp"
-        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="25dp"
+        android:layout_marginEnd="25dp"
         android:id="@+id/MakeSet_addbtn"
         />
 
