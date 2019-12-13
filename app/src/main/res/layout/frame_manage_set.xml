@@ -13,7 +13,8 @@
         android:orientation="horizontal"
         android:gravity="bottom"
         android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp">
+        android:layout_marginLeft="30dp"
+        android:layout_marginBottom="30dp">
 
         <EditText
             android:layout_width="0dp"
@@ -35,6 +36,7 @@
         </ImageView>-->
 
     </LinearLayout>
+<!--
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -60,14 +62,14 @@
             android:id="@+id/ManageSet_trash"/>
 
     </LinearLayout>
-
+-->
     <androidx.recyclerview.widget.RecyclerView
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:id="@+id/ManageSet_recycler"
         />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:backgroundTint="@color/colorMain"
@@ -77,6 +79,6 @@
         android:layout_marginBottom="25dp"
         android:layout_marginEnd="25dp"
         android:id="@+id/ManageSet_addbtn"
-        />
+        />-->
 
 </LinearLayout>

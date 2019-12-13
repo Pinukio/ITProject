@@ -1,8 +1,10 @@
 package com.example.itproject
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 
-class SetAdapter(private val list : MutableList<Model>, private val name : String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SetAdapter(private val list : MutableList<Model>, private val name : String, private val activity : SetActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val array_star : ArrayList<Boolean> = ArrayList()
     private lateinit var tmp : CollectionReference
@@ -62,6 +64,9 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
                         holder.subtitle.visibility = View.GONE
                     holder.countText.text = "단어 ${list.size - 1}개"
                     holder.nameText.text = name
+                    holder.studyBtn.setOnClickListener {
+                        activity.moveToStudy()
+                    }
                     titleCreated = true
                 }
             }
@@ -96,6 +101,8 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
         val subtitle : TextView = itemView.findViewById(R.id.SetActivity_subtitle)
         val countText : TextView = itemView.findViewById(R.id.SetActivity_count)
         val nameText : TextView = itemView.findViewById(R.id.SetActivity_name)
+        val studyBtn : Button = itemView.findViewById(R.id.SetActivity_study)
+        val cardBtn : Button = itemView.findViewById(R.id.SetActivity_card)
     }
 
     inner class CardTypeViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {

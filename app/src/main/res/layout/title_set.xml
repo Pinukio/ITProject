@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
         android:id="@+id/SetActivity_title"
         android:textSize="30sp"
         android:text="My Set"
@@ -18,8 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/SetActivity_subtitle"
-        android:layout_below="@id/SetActivity_title"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
         android:text="2019 11월 모고"
         android:textSize="18sp"
         android:layout_marginTop="10dp"
@@ -28,8 +27,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/SetActivity_subtitle"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:layout_marginTop="10dp"
         android:id="@+id/SetActivity_inform"
@@ -60,11 +58,37 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_background"
+            android:text="학습하기"
+            android:textColor="@color/colorMain"
+            android:layout_marginEnd="15dp"
+            android:id="@+id/SetActivity_study"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_background"
+            android:textColor="@color/colorMain"
+            android:text="단어카드"
+            android:layout_marginStart="15dp"
+            android:id="@+id/SetActivity_card"/>
+
+    </LinearLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="단어"
-        android:layout_below="@id/SetActivity_inform"
         android:id="@+id/SetActivity_text"
         android:textSize="20sp"
         android:textColor="#000000"
@@ -72,4 +96,4 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"/>
 
-</RelativeLayout>
+</LinearLayout>

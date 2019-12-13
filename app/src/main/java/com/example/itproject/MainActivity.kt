@@ -11,6 +11,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -68,7 +69,6 @@ class MainActivity : AppCompatActivity() {
                     if(it.isSuccessful) {
                         for(document in it.result!!) {
                             count++
-                            Log.i("????", count.toString())
                         }
                         //val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
                         val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
@@ -141,6 +141,7 @@ class MainActivity : AppCompatActivity() {
                         where = 0
                         count = getSetsSize()
                         textview_allSet_main.text = "보유 중인 학습 세트 : ${count}개"
+                        ManageSet_trash.visibility = View.GONE
                     }
                 }
             }
@@ -153,8 +154,8 @@ class MainActivity : AppCompatActivity() {
                     fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("ManageSet")!!).commit()
                 }
                 setToolbarTitle("학습 세트 관리")
+                ManageSet_trash.visibility = View.VISIBLE
                 nav.closeMenu()
-
             }
 
 
@@ -257,6 +258,11 @@ class MainActivity : AppCompatActivity() {
     private fun getSetsSize() : Int{
         val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
         return sf.getInt("sets", 0)
+    }
+
+    fun getTrashBtn() : ImageView {
+        val v : ImageView = findViewById(R.id.ManageSet_trash)
+        return v
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.itproject
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -93,9 +94,15 @@ class SetActivity : AppCompatActivity() {
         db.collection("users").document(email).get()
             .addOnSuccessListener {
                 name = it["name"].toString()
-                val adapter = SetAdapter(list!!, name)
+                val adapter = SetAdapter(list!!, name, this)
                 SetActivity_recycler.adapter = adapter
             }
+    }
 
+    fun moveToStudy() {
+        val intent = Intent(this, StudyActivity::class.java)
+        intent.putStringArrayListExtra("array_word", array_word)
+        intent.putStringArrayListExtra("array_meaning", array_meaning)
+        startActivity(intent)
     }
 }

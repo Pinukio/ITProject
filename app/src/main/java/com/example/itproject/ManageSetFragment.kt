@@ -1,7 +1,6 @@
 package com.example.itproject
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -9,15 +8,11 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -31,8 +26,8 @@ class ManageSetFragment : Fragment() {
     private val list : ArrayList<MSItem> = ArrayList()
     private lateinit var recycler : RecyclerView
     private var adapter : ManageSetAdapter? = null
-    private var allItemsChecked : Boolean = false
-    private lateinit var cb : CheckBox
+    //private var allItemsChecked : Boolean = false
+    //private lateinit var cb : CheckBox
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,27 +45,12 @@ class ManageSetFragment : Fragment() {
         val email = FirebaseAuth.getInstance().currentUser!!.email!!
         tmp = db.collection("users").document(email).collection("sets")
         recycler = view.findViewById(R.id.ManageSet_recycler)
-        /*view.findViewById<FloatingActionButton>(R.id.ManageSet_addbtn).setOnClickListener {
-            startActivity(Intent(activity, MakeSetActivity::class.java))
-            //activity!!.supportFragmentManager.beginTransaction().remove(this)
-            //(activity!! as MainActivity).setToolbarTitle("")
-        }*/
         val search : EditText = view.findViewById(R.id.ManageSet_edit)
         search.addTextChangedListener(MyTextWatcher())
 
         makeTitleArray()
-        cb = view.findViewById(R.id.ManageSet_checkAll)
-        cb.setOnClickListener {
-            if(!allItemsChecked) {
-                adapter!!.checkAllCb()
-                allItemsChecked = true
-            }
-            else {
-                adapter!!.unCheckAllCb()
-                allItemsChecked = false
-            }
-        }
-        view.findViewById<ImageView>(R.id.ManageSet_trash).setOnClickListener {
+
+        (activity as MainActivity).getTrashBtn().setOnClickListener {
             val builder : AlertDialog.Builder = AlertDialog.Builder(context!!)
             builder.setMessage("정말로 삭제하시겠습니까?")
             builder.setPositiveButton("예"
@@ -135,9 +115,11 @@ class ManageSetFragment : Fragment() {
         dialog.dismiss()
     }
 
-    inner class MyTextWatcher() : TextWatcher {
+    inner class MyTextWatcher : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
-            adapter!!.filter(s.toString())
+            if(adapter != null) {
+                adapter!!.filter(s.toString())
+            }
         }
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -148,9 +130,10 @@ class ManageSetFragment : Fragment() {
 
     }
 
-    fun changeCbState(b : Boolean) {
-        allItemsChecked = b
-        cb.isChecked = b
+    fun moveToSet(title : String, subtitle : String) {
+        val intent = Intent(activity, SetActivity::class.java)
+        intent.putExtra("title", title)
+        intent.putExtra("subtitle", subtitle)
+        startActivity(intent)
     }
-
 }
