@@ -1,4 +1,4 @@
-package com.example.itproject
+package com.example.itproject.fragment
 
 import android.content.Context
 import android.content.Intent
@@ -13,6 +13,8 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.itproject.R
+import com.example.itproject.activity.MakeSetActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
 class MainFragment : Fragment() {
@@ -36,13 +38,25 @@ class MainFragment : Fragment() {
 
         mainButton = view.findViewById(R.id.main_button_sub)
 
-        val anim_expansion : Animation = AnimationUtils.loadAnimation(activity, R.anim.expansion)
-        val appearance_left : Animation = AnimationUtils.loadAnimation(activity, R.anim.appearance_left)
-        val appearance_right : Animation = AnimationUtils.loadAnimation(activity, R.anim.appearance_right)
+        val anim_expansion : Animation = AnimationUtils.loadAnimation(activity,
+            R.anim.expansion
+        )
+        val appearance_left : Animation = AnimationUtils.loadAnimation(activity,
+            R.anim.appearance_left
+        )
+        val appearance_right : Animation = AnimationUtils.loadAnimation(activity,
+            R.anim.appearance_right
+        )
 
-        anim_reduction  = AnimationUtils.loadAnimation(activity, R.anim.reduction)
-        disappearance_left  = AnimationUtils.loadAnimation(activity, R.anim.disappearance_left)
-        disappearance_right  = AnimationUtils.loadAnimation(activity, R.anim.disappearance_right)
+        anim_reduction  = AnimationUtils.loadAnimation(activity,
+            R.anim.reduction
+        )
+        disappearance_left  = AnimationUtils.loadAnimation(activity,
+            R.anim.disappearance_left
+        )
+        disappearance_right  = AnimationUtils.loadAnimation(activity,
+            R.anim.disappearance_right
+        )
 
         cameraButton = view.findViewById(R.id.imageview_camera)
         pencilButton = view.findViewById(R.id.imageview_pencil)
@@ -135,7 +149,10 @@ class MainFragment : Fragment() {
         cameraButton.setOnClickListener {
 
             fragmentManager!!.beginTransaction().remove(this).commit()
-            fragmentManager!!.beginTransaction().add(R.id.Main_frame, PictureFragment()).commit()
+            fragmentManager!!.beginTransaction().add(
+                R.id.Main_frame,
+                PictureFragment()
+            ).commit()
 
             val sf : SharedPreferences = activity!!.getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
             val editor : SharedPreferences.Editor = sf.edit()

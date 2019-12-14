@@ -1,4 +1,4 @@
-package com.example.itproject
+package com.example.itproject.adapter
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -10,6 +10,9 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+import com.example.itproject.MSItem
+import com.example.itproject.fragment.ManageSetFragment
+import com.example.itproject.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
@@ -18,7 +21,8 @@ import kotlin.collections.ArrayList
 class ManageSetAdapter(
     private val list : ArrayList<MSItem>,
     private val onItemCheck : OnItemCheckListener,
-    private val fragment : ManageSetFragment) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val fragment : ManageSetFragment
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var cardCreated : Boolean = false
     private var array_selected : ArrayList<Int> = ArrayList()
     private val array_cardHolder : ArrayList<CardViewHolder> = ArrayList()

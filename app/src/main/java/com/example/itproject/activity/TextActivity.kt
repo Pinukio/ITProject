@@ -1,4 +1,4 @@
-package com.example.itproject
+package com.example.itproject.activity
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import com.example.itproject.R
 import kotlinx.android.synthetic.main.activity_text.*
 
 class TextActivity : AppCompatActivity() {

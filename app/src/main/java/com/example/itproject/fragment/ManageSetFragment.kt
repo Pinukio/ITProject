@@ -1,4 +1,4 @@
-package com.example.itproject
+package com.example.itproject.fragment
 
 import android.content.Context
 import android.content.Intent
@@ -13,6 +13,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itproject.MSItem
+import com.example.itproject.R
+import com.example.itproject.activity.MainActivity
+import com.example.itproject.activity.SetActivity
+import com.example.itproject.adapter.ManageSetAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -85,7 +90,13 @@ class ManageSetFragment : Fragment() {
                 .addOnSuccessListener {
                     val subtitle = it["subtitle"].toString()
                     val progress = (it["progress"] as Long).toInt()
-                    list.add(MSItem(title, subtitle, progress))
+                    list.add(
+                        MSItem(
+                            title,
+                            subtitle,
+                            progress
+                        )
+                    )
                     if(i < array_title.size - 1)
                         makeList(i + 1)
                     else {
@@ -109,7 +120,11 @@ class ManageSetFragment : Fragment() {
             }
         }
         //val imm : InputMethodManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        adapter = ManageSetAdapter(list, onItemCheck, this)
+        adapter = ManageSetAdapter(
+            list,
+            onItemCheck,
+            this
+        )
         recycler.layoutManager = LinearLayoutManager(activity)
         recycler.adapter = adapter
         dialog.dismiss()

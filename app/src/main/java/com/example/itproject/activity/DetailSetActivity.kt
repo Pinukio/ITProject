@@ -1,14 +1,16 @@
-package com.example.itproject
+package com.example.itproject.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.itproject.R
+import com.example.itproject.adapter.SwipeStackAdapter
 import link.fls.swipestack.SwipeStack
 
 class DetailSetActivity : AppCompatActivity() {
 
     private var mdata:ArrayList<String>?=null
     private val swipestack:SwipeStack?=null
-    private val adapter:SwipeStackAdapter?=null
+    private val adapter: SwipeStackAdapter?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

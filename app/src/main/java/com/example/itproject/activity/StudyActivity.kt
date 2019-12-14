@@ -1,10 +1,11 @@
-package com.example.itproject
+package com.example.itproject.activity
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itproject.R
+import com.example.itproject.adapter.StudyAdapter
 import kotlinx.android.synthetic.main.activity_study.*
 
 class StudyActivity : AppCompatActivity() {
@@ -23,7 +24,8 @@ class StudyActivity : AppCompatActivity() {
             val array_meaning : ArrayList<String> = intent.getStringArrayListExtra("array_meaning")!!
             Study_progress.progressBackgroundColor = Color.LTGRAY
             Study_recycler.layoutManager = LinearLayoutManager(applicationContext)
-            adapter = StudyAdapter(array_meaning, this)
+            adapter =
+                StudyAdapter(array_meaning, this)
             Study_recycler.adapter = adapter
             Study_back.setOnClickListener {
                 finish()

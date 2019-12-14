@@ -1,4 +1,4 @@
-package com.example.itproject
+package com.example.itproject.activity
 
 import android.content.Context
 import android.content.Intent
@@ -14,7 +14,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.itproject.MakeSetAdapter.OnItemCheckListener
+import com.example.itproject.*
+import com.example.itproject.adapter.MakeSetAdapter
+import com.example.itproject.adapter.MakeSetAdapter.OnItemCheckListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_make_set.*
@@ -73,7 +75,8 @@ class MakeSetActivity : AppCompatActivity() {
             for(i in 0 until array_word!!.size)
                 array_meaning!!.add("")
 
-            val retrofitService=RetrofitService.create()
+            val retrofitService=
+                RetrofitService.create()
             array_word!!.forEachIndexed { index, s ->
                 retrofitService.getWordRetrofit(s).enqueue(object : Callback<WordRepo> {
                     override fun onFailure(call: Call<WordRepo>, t: Throwable) {}
@@ -94,9 +97,19 @@ class MakeSetActivity : AppCompatActivity() {
 
         else {
             list = mutableListOf<Model>().apply {
-                add(Model(Model.TITLE_TYPE, "", ""))
+                add(
+                    Model(
+                        Model.TITLE_TYPE,
+                        "",
+                        ""
+                    )
+                )
             }
-            adapter = MakeSetAdapter(list!!, onItemClick, true)
+            adapter = MakeSetAdapter(
+                list!!,
+                onItemClick,
+                true
+            )
             for(i in 0..1)
             adapter!!.addItem()
             MakeSet_recycler.adapter = adapter
@@ -153,9 +166,21 @@ class MakeSetActivity : AppCompatActivity() {
         override fun doInBackground(vararg params: Void?): MutableList<Model> {
 
             list = mutableListOf<Model>().apply {
-                add(Model(Model.TITLE_TYPE, "", ""))
+                add(
+                    Model(
+                        Model.TITLE_TYPE,
+                        "",
+                        ""
+                    )
+                )
                 for(i in 0 until array_meaning!!.size) {
-                    add(Model(Model.CARD_TYPE, array_word!![i], array_meaning!![i]))
+                    add(
+                        Model(
+                            Model.CARD_TYPE,
+                            array_word!![i],
+                            array_meaning!![i]
+                        )
+                    )
                 }
             }
             return list!!
@@ -165,7 +190,11 @@ class MakeSetActivity : AppCompatActivity() {
         override fun onPostExecute(result: MutableList<Model>) {
             super.onPostExecute(result)
 
-            adapter = MakeSetAdapter(result, onItemClick, false)
+            adapter = MakeSetAdapter(
+                result,
+                onItemClick,
+                false
+            )
             MakeSet_recycler.adapter = adapter
             MakeSet_recycler.layoutManager = LinearLayoutManager(applicationContext)
 
@@ -191,14 +220,26 @@ class MakeSetActivity : AppCompatActivity() {
         MakeSet_recycler.scrollToPosition(position)
         Handler().postDelayed({
             if(what == "word") {
-                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word).requestFocus()
-                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_word), 0)
+                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                    R.id.MakeSet_word
+                ).requestFocus()
+                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                    R.id.MakeSet_word
+                ), 0)
             } else if(what == "meaning") {
-                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning).requestFocus()
-                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_meaning), 0)
+                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                    R.id.MakeSet_meaning
+                ).requestFocus()
+                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                    R.id.MakeSet_meaning
+                ), 0)
             } else if(what == "title") {
-                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title).requestFocus()
-                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(R.id.MakeSet_title), 0)
+                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                    R.id.MakeSet_title
+                ).requestFocus()
+                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                    R.id.MakeSet_title
+                ), 0)
             }
         }, 100)
     }

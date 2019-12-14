@@ -1,4 +1,4 @@
-package com.example.itproject
+package com.example.itproject.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itproject.Model
+import com.example.itproject.R
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -134,7 +136,13 @@ class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCh
     fun addItem() : Int{
         array_word!!.add("")
         array_meaning!!.add("")
-        list.add(Model(Model.CARD_TYPE, "", ""))
+        list.add(
+            Model(
+                Model.CARD_TYPE,
+                "",
+                ""
+            )
+        )
         notifyItemInserted(list.size - 1)
         return getLastIndex()
     }

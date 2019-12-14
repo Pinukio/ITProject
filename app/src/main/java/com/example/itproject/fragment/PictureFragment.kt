@@ -1,4 +1,4 @@
-package com.example.itproject
+package com.example.itproject.fragment
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -23,6 +23,8 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.itproject.R
+import com.example.itproject.activity.TextActivity
 import com.theartofdev.edmodo.cropper.CropImage
 import de.hdodenhof.circleimageview.CircleImageView
 import java.io.*
@@ -49,11 +51,21 @@ class PictureFragment : Fragment() {
         galleryButton = view.findViewById(R.id.imageview_gallery_picture)
         val mainButton : CircleImageView = view.findViewById(R.id.main_button_picture)
         val backgroundView : View = view.findViewById(R.id.view_frame_picture)
-        val disappearance_left = AnimationUtils.loadAnimation(activity, R.anim.disappearance_left)
-        val disappearance_right = AnimationUtils.loadAnimation(activity, R.anim.disappearance_right)
-        val anim_reduction = AnimationUtils.loadAnimation(activity, R.anim.reduction)
-        val anim_appearance = AnimationUtils.loadAnimation(activity, R.anim.appearance)
-        val anim_moving_left = AnimationUtils.loadAnimation(activity, R.anim.moving_left) //왼쪽으로 움직이며 생성
+        val disappearance_left = AnimationUtils.loadAnimation(activity,
+            R.anim.disappearance_left
+        )
+        val disappearance_right = AnimationUtils.loadAnimation(activity,
+            R.anim.disappearance_right
+        )
+        val anim_reduction = AnimationUtils.loadAnimation(activity,
+            R.anim.reduction
+        )
+        val anim_appearance = AnimationUtils.loadAnimation(activity,
+            R.anim.appearance
+        )
+        val anim_moving_left = AnimationUtils.loadAnimation(activity,
+            R.anim.moving_left
+        ) //왼쪽으로 움직이며 생성
 
         cameraButton.animation = anim_appearance
         galleryButton.animation = anim_moving_left
@@ -126,7 +138,10 @@ class PictureFragment : Fragment() {
             editor1.apply()
 
             fragmentManager.beginTransaction().remove(this).commit()
-            fragmentManager.beginTransaction().add(R.id.Main_frame, MainFragment()).commit()
+            fragmentManager.beginTransaction().add(
+                R.id.Main_frame,
+                MainFragment()
+            ).commit()
 
         }
 
@@ -169,7 +184,10 @@ class PictureFragment : Fragment() {
         editor1.apply()
 
         fragmentManager.beginTransaction().remove(this).commit()
-        fragmentManager.beginTransaction().add(R.id.Main_frame, MainFragment()).commit()
+        fragmentManager.beginTransaction().add(
+            R.id.Main_frame,
+            MainFragment()
+        ).commit()
 
     }
 

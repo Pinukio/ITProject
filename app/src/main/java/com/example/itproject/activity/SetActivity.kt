@@ -1,20 +1,19 @@
-package com.example.itproject
+package com.example.itproject.activity
 
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itproject.Model
+import com.example.itproject.R
+import com.example.itproject.adapter.SetAdapter
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_set.*
-import java.io.Serializable
 
 class SetActivity : AppCompatActivity() {
 
@@ -85,16 +84,29 @@ class SetActivity : AppCompatActivity() {
     private fun setRecycler() {
         SetActivity_recycler.layoutManager = LinearLayoutManager(this)
         list = mutableListOf<Model>().apply {
-            add(Model(Model.TITLE_TYPE, title, subtitle))
+            add(
+                Model(
+                    Model.TITLE_TYPE,
+                    title,
+                    subtitle
+                )
+            )
             for(i in 0 until array_word.size) {
-                add(Model(Model.CARD_TYPE, array_word[i], array_meaning[i]))
+                add(
+                    Model(
+                        Model.CARD_TYPE,
+                        array_word[i],
+                        array_meaning[i]
+                    )
+                )
             }
         }
         var name: String
         db.collection("users").document(email).get()
             .addOnSuccessListener {
                 name = it["name"].toString()
-                val adapter = SetAdapter(list!!, name, this)
+                val adapter =
+                    SetAdapter(list!!, name, this)
                 SetActivity_recycler.adapter = adapter
             }
     }

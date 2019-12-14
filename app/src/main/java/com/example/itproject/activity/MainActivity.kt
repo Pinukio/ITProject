@@ -1,14 +1,10 @@
-package com.example.itproject
+package com.example.itproject.activity
 
-import android.animation.ObjectAnimator
-import android.animation.StateListAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -17,7 +13,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import com.example.itproject.fragment.MainFragment
+import com.example.itproject.fragment.ManageSetFragment
+import com.example.itproject.fragment.PictureFragment
+import com.example.itproject.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.gun0912.tedpermission.PermissionListener
@@ -67,9 +66,11 @@ class MainActivity : AppCompatActivity() {
             db.collection("users").document(firebaseAuth.currentUser!!.email.toString()).collection("sets")
                 .get().addOnCompleteListener {
                     if(it.isSuccessful) {
+                        var i = 0
                         for(document in it.result!!) {
-                            count++
+                            i++
                         }
+                        count = i
                         //val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
                         val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
                         val et: SharedPreferences.Editor = sf.edit()
@@ -108,7 +109,10 @@ class MainActivity : AppCompatActivity() {
             mainButton.setOnClickListener {
 
                 if(nav.isMenuClosed) {
-                    fragmentManager.beginTransaction().add(R.id.Main_frame, MainFragment()).commit()
+                    fragmentManager.beginTransaction().add(
+                        R.id.Main_frame,
+                        MainFragment()
+                    ).commit()
 
                     val sf : SharedPreferences = getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
                     val sf1 : SharedPreferences = getSharedPreferences("count_mainFragment", Context.MODE_PRIVATE)
@@ -148,7 +152,9 @@ class MainActivity : AppCompatActivity() {
             Menu_manage.setOnClickListener {
                 where = 1
                 if(fragmentManager.findFragmentByTag("ManageSet") == null) {
-                    fragmentManager.beginTransaction().add(R.id.Main_frame_sub, ManageSetFragment(), "ManageSet").commit()
+                    fragmentManager.beginTransaction().add(
+                        R.id.Main_frame_sub,
+                        ManageSetFragment(), "ManageSet").commit()
                 }
                 else {
                     fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("ManageSet")!!).commit()
@@ -177,12 +183,16 @@ class MainActivity : AppCompatActivity() {
             val count : Int = sf.getInt("count", 0)
 
             if(count == 1) {
-                val mainFragment : MainFragment = supportFragmentManager.findFragmentById(R.id.Main_frame) as MainFragment
+                val mainFragment : MainFragment = supportFragmentManager.findFragmentById(
+                    R.id.Main_frame
+                ) as MainFragment
                 mainFragment.back()
             }
 
             if(count == 2) {
-                val pictureFragment : PictureFragment = supportFragmentManager.findFragmentById(R.id.Main_frame) as PictureFragment
+                val pictureFragment : PictureFragment = supportFragmentManager.findFragmentById(
+                    R.id.Main_frame
+                ) as PictureFragment
                 pictureFragment.back()
             }
 
@@ -228,16 +238,8 @@ class MainActivity : AppCompatActivity() {
         val count_ : Int = getSetsSize()
         textview_allSet_main.text = "보유 중인 학습 세트 : ${count_}개"
         if(count_ != count) {
-            /*val f = fragmentManager.findFragmentByTag("ManageSet")
-            if(f != null) {
-                fragmentManager.beginTransaction().remove(f).commit()
-                fragmentManager.beginTransaction().add(R.id.Main_frame_sub, ManageSetFragment(), "ManageSet").commit()
-
-            }
-            Log.i(count.toString(), count_.toString())*/
             refreshMS()
-            //count = count_
-
+            count = count_
         }
     }
 

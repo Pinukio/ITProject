@@ -1,11 +1,12 @@
-package com.example.itproject
+package com.example.itproject.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itproject.R
+import com.example.itproject.activity.StudyActivity
 import java.util.*
 import kotlin.collections.ArrayList
 
