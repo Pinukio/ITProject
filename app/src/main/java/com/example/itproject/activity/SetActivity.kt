@@ -129,4 +129,11 @@ class SetActivity : AppCompatActivity() {
         intent.putExtra("lastIndex", lastIndex)
         startActivity(intent)
     }
+
+    fun moveToCard() {
+        val intent = Intent(this, CardActivity::class.java)
+        intent.putStringArrayListExtra("array_word", array_word)
+        intent.putStringArrayListExtra("array_meaning", array_meaning)
+        startActivity(intent)
+    }
 }

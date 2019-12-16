@@ -69,6 +69,9 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
                     holder.studyBtn.setOnClickListener {
                         activity.moveToStudy()
                     }
+                    holder.cardBtn.setOnClickListener {
+                        activity.moveToCard()
+                    }
                     titleCreated = true
                 }
             }

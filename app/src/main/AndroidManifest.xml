@@ -18,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activity.ResultActivity"></activity>
+        <activity android:name=".activity.CardActivity"></activity>
+        <activity android:name=".activity.ResultActivity" />
         <activity android:name=".activity.StudyActivity" />
         <activity android:name=".activity.SetActivity" />
         <activity android:name=".activity.MakeSetActivity" />
