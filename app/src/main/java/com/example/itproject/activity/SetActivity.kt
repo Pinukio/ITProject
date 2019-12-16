@@ -27,6 +27,9 @@ class SetActivity : AppCompatActivity() {
     private var subtitle : String = ""
     private lateinit var db : FirebaseFirestore
     private var email = ""
+    private var progress = 0f
+    private lateinit var array_incorrect : ArrayList<Int>
+    private var lastIndex : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,16 +54,24 @@ class SetActivity : AppCompatActivity() {
             tmp.get()
                 .addOnSuccessListener {
                     size = (it["size"] as Long).toInt()
+                    progress = (it["progress"] as Double).toFloat()
+                    array_incorrect = it["array_incorrect"] as ArrayList<Int>
+                    lastIndex = (it["lastIndex"] as Long).toInt()
                     for(i in 0 until size) {
                         array_word.add("")
                         array_meaning.add("")
+                        setArray(i)
                     }
-                    if(size != 0)
-                        setArray(0)
+
                 }
 
             SetActivity_back.setOnClickListener {
                 finish()
+            }
+
+            SetActivity_fixBtn.setOnClickListener {
+                val intent_ = Intent(this, MakeSetActivity::class.java)
+                intent_.putStringArrayListExtra("array_word", array_word)
             }
         }
 
@@ -71,12 +82,9 @@ class SetActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 array_word[i] = it["word"].toString()
                 array_meaning[i] = it["meaning"].toString()
-                if(i == size - 1) {
+                if(!array_word.contains("")) {
                     setRecycler()
                     dialog!!.dismiss()
-                }
-                else {
-                    setArray(i + 1)
                 }
             }
     }
@@ -115,6 +123,10 @@ class SetActivity : AppCompatActivity() {
         val intent = Intent(this, StudyActivity::class.java)
         intent.putStringArrayListExtra("array_word", array_word)
         intent.putStringArrayListExtra("array_meaning", array_meaning)
+        intent.putIntegerArrayListExtra("array_incorrect", array_incorrect)
+        intent.putExtra("title", title)
+        intent.putExtra("progress", progress)
+        intent.putExtra("lastIndex", lastIndex)
         startActivity(intent)
     }
 }

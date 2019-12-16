@@ -8,45 +8,45 @@
     android:background="#ffffff">
 
     <androidx.appcompat.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorMain"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
-        android:id="@+id/Study_toolbar">
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorMain"
+    app:contentInsetLeft="0dp"
+    app:contentInsetStart="0dp"
+    android:id="@+id/Study_toolbar">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/arrow_l"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="15dp"
+            android:id="@+id/Study_back"
             >
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/arrow_l"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_margin="15dp"
-                android:id="@+id/Study_back"
-                >
+        </ImageView>
 
-            </ImageView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="학습하기"
+            android:textColor="#ffffff"
+            android:layout_gravity="center_vertical|center"
+            android:textSize="20sp"
+            android:layout_centerInParent="true"
+            >
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="학습하기"
-                android:textColor="#ffffff"
-                android:layout_gravity="center_vertical|center"
-                android:textSize="20sp"
-                android:layout_centerInParent="true"
-                >
+        </TextView>
 
-            </TextView>
+    </RelativeLayout>
 
-        </RelativeLayout>
-
-    </androidx.appcompat.widget.Toolbar>
+</androidx.appcompat.widget.Toolbar>
 
     <TextView
         android:layout_width="wrap_content"
@@ -77,6 +77,7 @@
         android:id="@+id/Study_recycler"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
+        android:overScrollMode="never"
         />
 
 </RelativeLayout>

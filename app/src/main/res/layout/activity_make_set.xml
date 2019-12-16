@@ -76,6 +76,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/MakeSet_toolbar"
         android:id="@+id/MakeSet_recycler"
+        android:overScrollMode="never"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

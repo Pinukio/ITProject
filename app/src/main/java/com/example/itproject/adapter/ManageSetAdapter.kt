@@ -3,6 +3,7 @@ package com.example.itproject.adapter
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,7 +61,7 @@ class ManageSetAdapter(
             holder.subtitle.visibility = View.GONE
         val progressBar = holder.progressBar
         progressBar.max = 100f
-        progressBar.progress = item.progress.toFloat()
+        progressBar.progress = item.progress
         progressBar.progressColor = Color.parseColor("#2196f3")
         progressBar.progressBackgroundColor = Color.LTGRAY
 

@@ -32,11 +32,12 @@ class MakeSetActivity : AppCompatActivity() {
     private var array_meaning : ArrayList<String>? = null
     private var adapter : MakeSetAdapter? = null
     private var dialog : AlertDialog? = null
-    private var array_null : ArrayList<Int>? = null // 뜻이 리턴되지 않은 단어들의 인덱스 저장
+    private var array_null : ArrayList<Int> = ArrayList() // 뜻이 리턴되지 않은 단어들의 인덱스 저장
     private lateinit var onItemClick : OnItemCheckListener
     private var count = 0
     private var title = ""
     private var subtitle = ""
+    private val arrayFinished : ArrayList<Boolean> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +45,9 @@ class MakeSetActivity : AppCompatActivity() {
 
         val intent = intent
         array_word = intent.getStringArrayListExtra("array_word")
-        array_meaning = ArrayList()
-        array_null = ArrayList()
+        array_meaning = intent.getStringArrayListExtra("array_meaning")
+        //array_meaning = ArrayList()
+        //array_null = ArrayList()
         //array_selected = ArrayList()
 
         val alertBuilder : AlertDialog.Builder = AlertDialog.Builder(this)
@@ -72,26 +74,30 @@ class MakeSetActivity : AppCompatActivity() {
         if(array_word != null) {
             dialog!!.show()
 
-            for(i in 0 until array_word!!.size)
-                array_meaning!!.add("")
+            if(array_meaning == null) {
+                array_meaning = ArrayList()
 
-            val retrofitService=
-                RetrofitService.create()
-            array_word!!.forEachIndexed { index, s ->
-                retrofitService.getWordRetrofit(s).enqueue(object : Callback<WordRepo> {
-                    override fun onFailure(call: Call<WordRepo>, t: Throwable) {}
-                    override fun onResponse(call: Call<WordRepo>, response: Response<WordRepo>) {
-                        val wordrepo: WordRepo? = response.body()
-                        if (wordrepo?.meaning?.korean == null) {
-                            array_meaning!![index] = ""
-                            array_null!!.add(index)
+                for(i in 0 until array_word!!.size)
+                    array_meaning!!.add("")
+
+                val retrofitService=
+                    RetrofitService.create()
+                array_word!!.forEachIndexed { index, s ->
+                    retrofitService.getWordRetrofit(s).enqueue(object : Callback<WordRepo> {
+                        override fun onFailure(call: Call<WordRepo>, t: Throwable) {}
+                        override fun onResponse(call: Call<WordRepo>, response: Response<WordRepo>) {
+                            val wordrepo: WordRepo? = response.body()
+                            if (wordrepo?.meaning?.korean == null) {
+                                array_meaning!![index] = ""
+                                array_null.add(index)
+                            }
+                            else
+                                array_meaning!![index] = wordrepo.meaning.korean
+                            MakeListTask().execute()
+
                         }
-                        else
-                        array_meaning!![index] = wordrepo.meaning.korean
-                        MakeListTask().execute()
-
-                    }
-                })
+                    })
+                }
             }
         }
 
@@ -128,29 +134,32 @@ class MakeSetActivity : AppCompatActivity() {
                 title = adapter!!.getTitleText()
                 subtitle = adapter!!.getSubtitleText()
 
-                if(title.isEmpty()) {
-                    Toast.makeText(applicationContext, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                    moveFocus(0, "title")
-                }
-
-                else if(array_word!!.size == 0) {
-                    Toast.makeText(applicationContext, "카드를 만들어 주세요.", Toast.LENGTH_SHORT).show()
-                }
-                else if(array_word!!.contains("")) {
-                    var index = array_word!!.indexOf("") + 1
-                    Log.i("흠음", array_word!!.size.toString())
-                    Toast.makeText(applicationContext, "단어를 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                    moveFocus(index, "word")
-                }
-                else if(array_meaning!!.contains("")) {
-                    var index = array_meaning!!.indexOf("") + 1
-                    Toast.makeText(applicationContext, "뜻을 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                    moveFocus(index, "meaning")
-                }
-
-                else {
-                    dialog!!.show()
-                    addToDB(0)
+                when {
+                    title.isEmpty() -> {
+                        Toast.makeText(applicationContext, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                        moveFocus(0, "title")
+                    }
+                    array_word!!.size == 0 -> {
+                        Toast.makeText(applicationContext, "카드를 만들어 주세요.", Toast.LENGTH_SHORT).show()
+                    }
+                    array_word!!.contains("") -> {
+                        val index = array_word!!.indexOf("") + 1
+                        Toast.makeText(applicationContext, "단어를 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                        moveFocus(index, "word")
+                    }
+                    array_meaning!!.contains("") -> {
+                        val index = array_meaning!!.indexOf("") + 1
+                        Toast.makeText(applicationContext, "뜻을 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                        moveFocus(index, "meaning")
+                    }
+                    else -> {
+                        dialog!!.show()
+                        for(i in 0 until array_word!!.size) {
+                            arrayFinished.add(false)
+                            addToDB(i)
+                        }
+                        //addToDB(0)
+                    }
                 }
             }
         }
@@ -203,7 +212,7 @@ class MakeSetActivity : AppCompatActivity() {
             for(i in 0 until array_meaning!!.size) {
                 if(array_meaning!![i] == "") { //뜻이 없을 경우 예외처리
 
-                    if(array_null!!.contains(i)) //api에서 뜻이 리턴되지 않은 경우
+                    if(array_null.contains(i)) //api에서 뜻이 리턴되지 않은 경우
                         tmp = true
                 }
                 else
@@ -215,35 +224,38 @@ class MakeSetActivity : AppCompatActivity() {
         }
     }
 
-    fun moveFocus(position : Int, what : String) {
+    private fun moveFocus(position : Int, what : String) {
         val imm : InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         MakeSet_recycler.scrollToPosition(position)
         Handler().postDelayed({
-            if(what == "word") {
-                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
-                    R.id.MakeSet_word
-                ).requestFocus()
-                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
-                    R.id.MakeSet_word
-                ), 0)
-            } else if(what == "meaning") {
-                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
-                    R.id.MakeSet_meaning
-                ).requestFocus()
-                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
-                    R.id.MakeSet_meaning
-                ), 0)
-            } else if(what == "title") {
-                MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
-                    R.id.MakeSet_title
-                ).requestFocus()
-                imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
-                    R.id.MakeSet_title
-                ), 0)
+            when (what) {
+                "word" -> {
+                    MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                        R.id.MakeSet_word
+                    ).requestFocus()
+                    imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                        R.id.MakeSet_word
+                    ), 0)
+                }
+                "meaning" -> {
+                    MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                        R.id.MakeSet_meaning
+                    ).requestFocus()
+                    imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                        R.id.MakeSet_meaning
+                    ), 0)
+                }
+                "title" -> {
+                    MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                        R.id.MakeSet_title
+                    ).requestFocus()
+                    imm.showSoftInput(MakeSet_recycler.findViewHolderForAdapterPosition(position)!!.itemView.findViewById<EditText>(
+                        R.id.MakeSet_title
+                    ), 0)
+                }
             }
         }, 100)
     }
-
 
     private fun addToDB(i : Int) {
         val db : FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -259,13 +271,16 @@ class MakeSetActivity : AppCompatActivity() {
         tmp.collection("_").document(i.toString()).set(map)
             .addOnSuccessListener {
                 count++
-                if(i == array_word!!.size - 1) {
+                arrayFinished[i] = true
+                if(!arrayFinished.contains(false)) {
                     dialog!!.dismiss()
                     val intent = Intent(this, SetActivity::class.java)
                     val subMap = hashMapOf(
                         "subtitle" to subtitle,
                         "size" to count,
-                        "progress" to 0
+                        "progress" to 0f,
+                        "lastIndex" to 0,
+                        "array_incorrect" to ArrayList<Int>()
                     )
                     tmp.set(subMap)
 
@@ -278,9 +293,6 @@ class MakeSetActivity : AppCompatActivity() {
                     intent.putExtra("subtitle", subtitle)
                     startActivity(intent)
                     finish()
-                }
-                else {
-                    addToDB(i + 1)
                 }
             }
     }

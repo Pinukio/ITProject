@@ -31,8 +31,7 @@ class ManageSetFragment : Fragment() {
     private val list : ArrayList<MSItem> = ArrayList()
     private lateinit var recycler : RecyclerView
     private var adapter : ManageSetAdapter? = null
-    //private var allItemsChecked : Boolean = false
-    //private lateinit var cb : CheckBox
+    private lateinit var emptyItem : MSItem
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,17 +52,18 @@ class ManageSetFragment : Fragment() {
         val search : EditText = view.findViewById(R.id.ManageSet_edit)
         search.addTextChangedListener(MyTextWatcher())
 
-        makeTitleArray()
+        emptyItem = MSItem()
+        setRecycler()
 
         (activity as MainActivity).getTrashBtn().setOnClickListener {
             val builder : AlertDialog.Builder = AlertDialog.Builder(context!!)
-            builder.setMessage("정말로 삭제하시겠습니까?")
-            builder.setPositiveButton("예"
+            builder.setMessage("삭제하시겠습니까?")
+            builder.setPositiveButton("삭제"
             ) { _, _ ->
                 adapter!!.deleteItems()
                 search.setText("")
             }
-            builder.setNegativeButton("아니요"
+            builder.setNegativeButton("취소"
             ) { dialog, _ ->
                 dialog.cancel()
             }
@@ -72,44 +72,34 @@ class ManageSetFragment : Fragment() {
         return view
     }
 
-    private fun makeTitleArray() {
+    private fun setRecycler() {
         tmp.get()
             .addOnSuccessListener {
                 for(doc in it) {
                     array_title.add(doc.id)
                 }
-                makeList(0)
+                //makeList(0)
+                for(i in 0 until array_title.size) {
+                    list.add(emptyItem)
+                    makeList(i)
+                }
             }
     }
 
     private fun makeList(i : Int) {
-        val title : String
-        if(array_title.size != 0) {
-            title = array_title[i]
-            tmp.document(title).get()
-                .addOnSuccessListener {
-                    val subtitle = it["subtitle"].toString()
-                    val progress = (it["progress"] as Long).toInt()
-                    list.add(
-                        MSItem(
-                            title,
-                            subtitle,
-                            progress
-                        )
-                    )
-                    if(i < array_title.size - 1)
-                        makeList(i + 1)
-                    else {
-                        setRecycler()
-                    }
+        val title : String = array_title[i]
+        tmp.document(title).get()
+            .addOnSuccessListener {
+                val subtitle = it["subtitle"].toString()
+                val progress = (it["progress"] as Double).toFloat()
+                list[i] = MSItem(title, subtitle, progress)
+                if(!list.contains(emptyItem)) {
+                    setAdapter()
                 }
-        }
-        else {
-            setRecycler()
-        }
+            }
     }
 
-    private fun setRecycler() {
+    private fun setAdapter() {
 
         val onItemCheck : ManageSetAdapter.OnItemCheckListener = object : ManageSetAdapter.OnItemCheckListener {
             override fun onItemCheck(index : Int) {
@@ -119,7 +109,6 @@ class ManageSetFragment : Fragment() {
                 adapter!!.setSelectedArray(index, false)
             }
         }
-        //val imm : InputMethodManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         adapter = ManageSetAdapter(
             list,
             onItemCheck,

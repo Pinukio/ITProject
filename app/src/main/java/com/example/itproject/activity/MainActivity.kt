@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             setContentView(R.layout.activity_main)
             //Main_toolbar.setTitleTextColor(Color.WHITE)
             setSupportActionBar(Main_toolbar)
+
             fragmentManager = supportFragmentManager
 
             val alertBuilder : AlertDialog.Builder = AlertDialog.Builder(this)
@@ -130,9 +131,29 @@ class MainActivity : AppCompatActivity() {
 
             }
 
+            textview_allSee_main.setOnClickListener {
+                val f = fragmentManager.fragments
+                val msf = fragmentManager.findFragmentByTag("ManageSet")
+                when {
+                    f.size == 0 -> {
+                        fragmentManager.beginTransaction().add(R.id.Main_frame_sub, ManageSetFragment(), "ManageSet").commit()
+                    }
+                    f.contains(msf) -> {
+                        fragmentManager.beginTransaction().show(msf!!).commit()
+                    }
+                    else -> {
+                        fragmentManager.beginTransaction().replace(R.id.Main_frame_sub, ManageSetFragment(), "ManageSet").commit()
+                    }
+                }
+                where = 1
+                setToolbarTitle("학습 세트 관리")
+                ManageSet_trash.visibility = View.VISIBLE
+            }
+
             Main_background.setOnClickListener{
                 nav.closeMenu()
             }
+
             Menu_home.setOnClickListener {
                 when(where) {
                     0 -> { // home
@@ -149,6 +170,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
             Menu_manage.setOnClickListener {
                 where = 1
                 if(fragmentManager.findFragmentByTag("ManageSet") == null) {
@@ -238,22 +260,36 @@ class MainActivity : AppCompatActivity() {
         val count_ : Int = getSetsSize()
         textview_allSet_main.text = "보유 중인 학습 세트 : ${count_}개"
         if(count_ != count) {
-            refreshMS()
+            removeMS()
             count = count_
+        }
+        if(shouldRefresh()) {
+            refreshMS()
+            val edit = getSharedPreferences("shouldRefresh", Context.MODE_PRIVATE).edit()
+            edit.putBoolean("shouldRefresh", false).apply()
         }
     }
 
-    fun setToolbarTitle(s : String) {
+    private fun setToolbarTitle(s : String) {
         Main_toolbar_title.text = s
     }
 
     private fun refreshMS() {
-        var f = fragmentManager.findFragmentByTag("ManageSet")
+        val f = fragmentManager.findFragmentByTag("ManageSet")
         if(f != null) {
             fragmentManager.beginTransaction().remove(f).commit()
-            fragmentManager.beginTransaction().add(ManageSetFragment(), "ManageSet")
-            f = fragmentManager.findFragmentByTag("ManageSet")
-            fragmentManager.beginTransaction().hide(f!!).commit()
+            fragmentManager.beginTransaction().add(R.id.Main_frame_sub, ManageSetFragment(), "ManageSet").commit()
+            //f = fragmentManager.findFragmentByTag("ManageSet")
+            //fragmentManager.beginTransaction().show(f!!).commit()
+            //setToolbarTitle("")
+            //ManageSet_trash.visibility = View.GONE
+        }
+    }
+
+    private fun removeMS() {
+        val f = fragmentManager.findFragmentByTag("ManageSet")
+        if(f != null) {
+            fragmentManager.beginTransaction().remove(f).commit()
         }
     }
 
@@ -265,6 +301,11 @@ class MainActivity : AppCompatActivity() {
     fun getTrashBtn() : ImageView {
         val v : ImageView = findViewById(R.id.ManageSet_trash)
         return v
+    }
+
+    private fun shouldRefresh() : Boolean {
+        val sf : SharedPreferences = getSharedPreferences("shouldRefresh", Context.MODE_PRIVATE)
+        return sf.getBoolean("shouldRefresh", false)
     }
 
 }
