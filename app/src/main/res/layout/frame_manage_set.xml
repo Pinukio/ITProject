@@ -22,8 +22,7 @@
             android:layout_weight="5"
             android:hint="  내 학습세트 검색"
             android:id="@+id/ManageSet_edit"
-            android:paddingBottom="15dp">
-        </EditText>
+            android:paddingBottom="15dp"/>
 
         <!--<ImageView
             android:layout_width="0dp"

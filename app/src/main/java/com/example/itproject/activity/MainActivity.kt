@@ -17,6 +17,7 @@ import com.example.itproject.fragment.MainFragment
 import com.example.itproject.fragment.ManageSetFragment
 import com.example.itproject.fragment.PictureFragment
 import com.example.itproject.R
+import com.example.itproject.fragment.SearchFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.gun0912.tedpermission.PermissionListener
@@ -51,7 +52,6 @@ class MainActivity : AppCompatActivity() {
 
         else {
             setContentView(R.layout.activity_main)
-            //Main_toolbar.setTitleTextColor(Color.WHITE)
             setSupportActionBar(Main_toolbar)
 
             fragmentManager = supportFragmentManager
@@ -72,7 +72,6 @@ class MainActivity : AppCompatActivity() {
                             i++
                         }
                         count = i
-                        //val sf_countBefore : SharedPreferences = getSharedPreferences("count_sets_before", Context.MODE_PRIVATE)
                         val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
                         val et: SharedPreferences.Editor = sf.edit()
                         et.putInt("sets", count).apply()
@@ -88,9 +87,6 @@ class MainActivity : AppCompatActivity() {
             actionBar.setDisplayShowCustomEnabled(true)
 
             actionBar.setDisplayShowTitleEnabled(false)
-            //val stateListAnimator = StateListAnimator()
-            //stateListAnimator.addState(IntArray(0), ObjectAnimator.ofFloat(Main_appbarlayout, "elevation", 0f))
-            //Main_appbarlayout.stateListAnimator = stateListAnimator
 
             val permissionListener = object : PermissionListener
             {
@@ -183,6 +179,17 @@ class MainActivity : AppCompatActivity() {
                 }
                 setToolbarTitle("학습 세트 관리")
                 ManageSet_trash.visibility = View.VISIBLE
+                nav.closeMenu()
+            }
+
+            Menu_search.setOnClickListener {
+                where = 2
+                if(fragmentManager.findFragmentByTag("Search") == null)
+                    fragmentManager.beginTransaction().add(R.id.Main_frame_sub, SearchFragment(), "Search").commit()
+                else
+                    fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("Search")!!).commit()
+                setToolbarTitle("학습 세트 검색")
+                ManageSet_trash.visibility = View.GONE
                 nav.closeMenu()
             }
 

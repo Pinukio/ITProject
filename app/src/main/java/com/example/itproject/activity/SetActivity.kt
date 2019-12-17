@@ -47,7 +47,11 @@ class SetActivity : AppCompatActivity() {
             dialog!!.show()
 
             db = FirebaseFirestore.getInstance()
-            email = FirebaseAuth.getInstance().currentUser!!.email!!
+            //email = FirebaseAuth.getInstance().currentUser!!.email!!
+            email = if(intent.getStringExtra("email") == null)
+                FirebaseAuth.getInstance().currentUser!!.email!!
+            else
+                intent.getStringExtra("email")!!
             title = intent.getStringExtra("title")!!
             subtitle = intent.getStringExtra("subtitle")!!
             tmp = db.collection("users").document(email).collection("sets").document(title)

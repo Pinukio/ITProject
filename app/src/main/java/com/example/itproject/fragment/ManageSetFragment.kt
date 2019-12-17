@@ -40,7 +40,6 @@ class ManageSetFragment : Fragment() {
     ): View? {
         val view : View = inflater.inflate(R.layout.frame_manage_set, container, false)
         val alertBuilder : AlertDialog.Builder = AlertDialog.Builder(context!!)
-        val inflater : LayoutInflater = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         alertBuilder.setView(inflater.inflate(R.layout.dialog_loading, null))
         alertBuilder.setCancelable(false)
         dialog = alertBuilder.create()
