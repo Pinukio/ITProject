@@ -22,8 +22,10 @@ class SearchAdapter(private val list : ArrayList<SearchItem>, private val fragme
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as MyViewHolder).title.text = list[position].title
-        if(list[position].subtitle.isBlank())
+        if(list[position].subtitle.isBlank()) {
             holder.subtitle.visibility = View.GONE
+            holder.subtitle.text = ""
+        }
         else
             holder.subtitle.text = list[position].subtitle
         holder.name.text = list[position].name

@@ -14,11 +14,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.example.itproject.fragment.MainFragment
-import com.example.itproject.fragment.ManageSetFragment
-import com.example.itproject.fragment.PictureFragment
 import com.example.itproject.R
-import com.example.itproject.fragment.SearchFragment
+import com.example.itproject.fragment.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.gun0912.tedpermission.PermissionListener
@@ -105,27 +102,27 @@ class MainActivity : AppCompatActivity() {
             mainButton = findViewById(R.id.circleImgview_main)
 
             mainButton.setOnClickListener {
+                if(where == 0) {
+                    if(nav.isMenuClosed) {
+                        fragmentManager.beginTransaction().add(
+                            R.id.Main_frame,
+                            MainFragment()
+                        ).commit()
 
-                if(nav.isMenuClosed) {
-                    fragmentManager.beginTransaction().add(
-                        R.id.Main_frame,
-                        MainFragment()
-                    ).commit()
+                        val sf : SharedPreferences = getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
+                        val sf1 : SharedPreferences = getSharedPreferences("count_mainFragment", Context.MODE_PRIVATE)
 
-                    val sf : SharedPreferences = getSharedPreferences("count_fragment", Context.MODE_PRIVATE)
-                    val sf1 : SharedPreferences = getSharedPreferences("count_mainFragment", Context.MODE_PRIVATE)
+                        val editor : SharedPreferences.Editor = sf.edit()
+                        val editor1 : SharedPreferences.Editor = sf1.edit()
 
-                    val editor : SharedPreferences.Editor = sf.edit()
-                    val editor1 : SharedPreferences.Editor = sf1.edit()
+                        editor.putInt("count", 1)
+                        editor1.putInt("count", 0)
 
-                    editor.putInt("count", 1)
-                    editor1.putInt("count", 0)
+                        editor.apply()
+                        editor1.apply()
 
-                    editor.apply()
-                    editor1.apply()
-
+                    }
                 }
-
             }
 
             textview_allSee_main.setOnClickListener {
@@ -152,24 +149,40 @@ class MainActivity : AppCompatActivity() {
             }
 
             Menu_home.setOnClickListener {
+                setToolbarTitle("")
+                nav.closeMenu()
+                count = getSetsSize()
+                textview_allSet_main.text = "보유 중인 학습 세트 : ${count}개"
+                ManageSet_trash.visibility = View.GONE
+
                 when(where) {
-                    0 -> { // home
+                    /*0 -> { // home
                         nav.closeMenu()
-                    }
+                    }*/
                     1 -> {
                         fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("ManageSet")!!).commit()
-                        setToolbarTitle("")
-                        nav.closeMenu()
-                        where = 0
-                        count = getSetsSize()
-                        textview_allSet_main.text = "보유 중인 학습 세트 : ${count}개"
-                        ManageSet_trash.visibility = View.GONE
+                    }
+                    2 -> {
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("Search")!!).commit()
+                    }
+                    3 -> {
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("Profile")!!).commit()
                     }
                 }
+                where = 0
             }
 
             Menu_manage.setOnClickListener {
+                when(where) {
+                    2 -> {
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("Search")!!).commit()
+                    }
+                    3 -> {
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("Profile")!!).commit()
+                    }
+                }
                 where = 1
+
                 if(fragmentManager.findFragmentByTag("ManageSet") == null) {
                     fragmentManager.beginTransaction().add(
                         R.id.Main_frame_sub,
@@ -179,21 +192,54 @@ class MainActivity : AppCompatActivity() {
                     fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("ManageSet")!!).commit()
                 }
                 setToolbarTitle("학습 세트 관리")
+                Profile_fixbtn.visibility = View.GONE
                 ManageSet_trash.visibility = View.VISIBLE
                 nav.closeMenu()
             }
 
             Menu_search.setOnClickListener {
-                where = 2
+                when(where) {
+                    1 -> {
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("ManageSet")!!).commit()
+                    }
+                    3 -> {
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("Profile")!!).commit()
+                    }
+                }
+
                 if(fragmentManager.findFragmentByTag("Search") == null)
                     fragmentManager.beginTransaction().add(R.id.Main_frame_sub, SearchFragment(), "Search").commit()
                 else
                     fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("Search")!!).commit()
+                where = 2
+
                 setToolbarTitle("학습 세트 검색")
+                Profile_fixbtn.visibility = View.GONE
                 ManageSet_trash.visibility = View.GONE
                 nav.closeMenu()
             }
 
+            Menu_settings.setOnClickListener {
+                when(where) {
+                    1 -> {
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("ManageSet")!!).commit()
+                    }
+                    2 -> {
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("Search")!!).commit()
+                    }
+                }
+
+                if(fragmentManager.findFragmentByTag("Profile") == null)
+                    fragmentManager.beginTransaction().add(R.id.Main_frame_sub, ProfileFragment(), "Profile").commit()
+                else
+                    fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("Profile")!!).commit()
+                where = 3
+
+                setToolbarTitle("")
+                ManageSet_trash.visibility = View.GONE
+                Profile_fixbtn.visibility = View.VISIBLE
+                nav.closeMenu()
+            }
 
             Menu_logout.setOnClickListener {
                 val builder_ : AlertDialog.Builder = AlertDialog.Builder(this)
@@ -306,7 +352,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getSetsSize() : Int{
+    fun getSetsSize() : Int{
         val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
         return sf.getInt("sets", 0)
     }
@@ -319,6 +365,11 @@ class MainActivity : AppCompatActivity() {
     private fun shouldRefresh() : Boolean {
         val sf : SharedPreferences = getSharedPreferences("shouldRefresh", Context.MODE_PRIVATE)
         return sf.getBoolean("shouldRefresh", false)
+    }
+
+    fun getFixBtn() : ImageView {
+        val v : ImageView = findViewById(R.id.Profile_fixbtn)
+        return v
     }
 
 }

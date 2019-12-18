@@ -7,7 +7,7 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import com.example.itproject.R
 
-class CardAdapter(private val array_word : ArrayList<String>, private val array_meaning : ArrayList<String>) : BaseAdapter() {
+class CardAdapter(private val array_word : ArrayList<String>, private val array_meaning : ArrayList<String>, private val array_star : BooleanArray) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.card, parent, false)

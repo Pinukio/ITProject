@@ -43,6 +43,7 @@ class LoginActivity : AppCompatActivity() {
                             dialog.dismiss()
                             Toast.makeText(applicationContext, "로그인되었습니다.", Toast.LENGTH_SHORT).show()
                             startActivity(Intent(applicationContext, MainActivity::class.java))
+                            finish()
                         }
                         else {
                             Toast.makeText(applicationContext, "로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()

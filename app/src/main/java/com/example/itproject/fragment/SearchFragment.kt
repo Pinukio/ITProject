@@ -38,20 +38,27 @@ class SearchFragment : Fragment() {
         alertBuilder.setCancelable(false)
         dialog = alertBuilder.create()
 
-        view.findViewById<ImageView>(R.id.Search_searchbtn).setOnClickListener {
+        val searchBtn : ImageView = view.findViewById(R.id.Search_searchbtn)
+        val edit : EditText = view.findViewById(R.id.Search_edit)
+        recycler = view.findViewById(R.id.Search_recycler)
+        db = FirebaseFirestore.getInstance()
+
+        searchBtn.setOnClickListener {
             dialog.show()
-            db = FirebaseFirestore.getInstance()
-            recycler = view.findViewById(R.id.Search_recycler)
-            setRecycler(view.findViewById<EditText>(R.id.Search_edit).text.toString())
+            setRecycler(edit.text.toString())
+        }
+
+        edit.setOnEditorActionListener { v, actionId, event ->
+            searchBtn.performClick()
         }
         return view
     }
 
     private fun setRecycler(text : String) {
         val currentEmail : String = FirebaseAuth.getInstance().currentUser!!.email!!
-        //val array_email : ArrayList<String> = ArrayList()
         db.collection("users").get()
             .addOnSuccessListener {
+                array_finished.clear()
                 it.forEachIndexed { index, doc ->
                     if(doc.id != currentEmail) {
                         //array_email.add(doc.id)
@@ -69,7 +76,7 @@ class SearchFragment : Fragment() {
             .addOnSuccessListener {
                 for(doc in it) {
                     if(doc.id.contains(text)) {
-                        list.add(SearchItem(text, doc["subtitle"].toString(), name, email))
+                        list.add(SearchItem(doc.id, doc["subtitle"].toString(), name, email))
                     }
                 }
                 array_finished[index] = true
