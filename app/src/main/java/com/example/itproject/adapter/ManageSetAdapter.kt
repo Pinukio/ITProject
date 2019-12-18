@@ -55,10 +55,12 @@ class ManageSetAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = list[position]
         (holder as CardViewHolder).title.text = item.text
-        if(item.text2.isNotEmpty())
+        if(item.text2.isNotBlank())
             holder.subtitle.text = item.text2
-        else
+        else {
             holder.subtitle.visibility = View.GONE
+            holder.subtitle.text = ""
+        }
         val progressBar = holder.progressBar
         progressBar.max = 100f
         progressBar.progress = item.progress
@@ -145,7 +147,7 @@ class ManageSetAdapter(
         }
         if (text.isEmpty()) {
             list.addAll(itemList)
-            array_selected.addAll(tmp_selected) // 체크박스 전체 선택하는 거 문제 있음.....
+            array_selected.addAll(tmp_selected)
             tmp_selected.forEach {
                 array_cardHolder[it].checkbox.isChecked = true
             }

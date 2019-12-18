@@ -22,23 +22,25 @@ class SearchAdapter(private val list : ArrayList<SearchItem>, private val fragme
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as MyViewHolder).title.text = list[position].title
-        if(list[position].subtitle == "")
+        if(list[position].subtitle.isBlank())
             holder.subtitle.visibility = View.GONE
         else
             holder.subtitle.text = list[position].subtitle
         holder.name.text = list[position].name
+        holder.email.text = list[position].email
     }
 
     inner class MyViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         val title : TextView = itemView.findViewById(R.id.Search_title)
         val subtitle : TextView = itemView.findViewById(R.id.Search_subtitle)
         val name : TextView = itemView.findViewById(R.id.Search_name)
+        val email : TextView = itemView.findViewById(R.id.Search_email)
         init {
             itemView.setOnClickListener {
                 val titleText = title.text.toString()
                 val subtitleText = subtitle.text.toString()
-                val nameText = name.text.toString()
-                fragment.moveToSet(titleText, subtitleText, nameText)
+                val emailText = email.text.toString()
+                fragment.moveToSet(titleText, subtitleText, emailText)
             }
         }
     }

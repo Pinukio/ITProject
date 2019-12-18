@@ -16,6 +16,7 @@ class CardActivity : AppCompatActivity() {
         val intent = intent
         val array_word : ArrayList<String> = intent.getStringArrayListExtra("array_word")!!
         val array_meaning : ArrayList<String> = intent.getStringArrayListExtra("array_meaning")!!
+        val array_star : BooleanArray = intent.getBooleanArrayExtra("array_star")!!
         val adapter = CardAdapter(array_word, array_meaning)
         Card_card.adapter = adapter
 

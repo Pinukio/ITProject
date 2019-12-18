@@ -1,6 +1,7 @@
 package com.example.itproject.activity
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -195,8 +196,17 @@ class MainActivity : AppCompatActivity() {
 
 
             Menu_logout.setOnClickListener {
-                firebaseAuth.signOut()
-                startActivity(Intent(this, LoginActivity::class.java))
+                val builder_ : AlertDialog.Builder = AlertDialog.Builder(this)
+                builder_.setMessage("로그아웃하시겠습니까?")
+                builder_.setPositiveButton("로그아웃") { _, _ ->
+                    firebaseAuth.signOut()
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
+                builder_.setNegativeButton("취소") { dialog, _ ->
+                    dialog.cancel()
+                }
+                builder_.show()
             }
         }
     }
@@ -286,10 +296,6 @@ class MainActivity : AppCompatActivity() {
         if(f != null) {
             fragmentManager.beginTransaction().remove(f).commit()
             fragmentManager.beginTransaction().add(R.id.Main_frame_sub, ManageSetFragment(), "ManageSet").commit()
-            //f = fragmentManager.findFragmentByTag("ManageSet")
-            //fragmentManager.beginTransaction().show(f!!).commit()
-            //setToolbarTitle("")
-            //ManageSet_trash.visibility = View.GONE
         }
     }
 

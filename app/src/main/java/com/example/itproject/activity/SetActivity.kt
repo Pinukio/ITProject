@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,12 +31,17 @@ class SetActivity : AppCompatActivity() {
     private var progress = 0f
     private lateinit var array_incorrect : ArrayList<Int>
     private var lastIndex : Int = 0
+    private var isFromOther : Boolean = false
+    private lateinit var array_star : BooleanArray
+    companion object {
+        lateinit var ac : SetActivity
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_set)
 
-        val intent = intent
+        //val intent = intent
 
         if(intent != null) {
 
@@ -47,11 +53,14 @@ class SetActivity : AppCompatActivity() {
             dialog!!.show()
 
             db = FirebaseFirestore.getInstance()
-            //email = FirebaseAuth.getInstance().currentUser!!.email!!
-            email = if(intent.getStringExtra("email") == null)
-                FirebaseAuth.getInstance().currentUser!!.email!!
-            else
-                intent.getStringExtra("email")!!
+            if(intent.getStringExtra("email") == null) {
+                email = FirebaseAuth.getInstance().currentUser!!.email!!
+            }
+            else {
+                email = intent.getStringExtra("email")!!
+                isFromOther = true
+                SetActivity_fixBtn.setImageResource(R.drawable.share__white)
+            }
             title = intent.getStringExtra("title")!!
             subtitle = intent.getStringExtra("subtitle")!!
             tmp = db.collection("users").document(email).collection("sets").document(title)
@@ -61,12 +70,12 @@ class SetActivity : AppCompatActivity() {
                     progress = (it["progress"] as Double).toFloat()
                     array_incorrect = it["array_incorrect"] as ArrayList<Int>
                     lastIndex = (it["lastIndex"] as Long).toInt()
+                    array_star = BooleanArray(size)
                     for(i in 0 until size) {
                         array_word.add("")
                         array_meaning.add("")
                         setArray(i)
                     }
-
                 }
 
             SetActivity_back.setOnClickListener {
@@ -74,9 +83,17 @@ class SetActivity : AppCompatActivity() {
             }
 
             SetActivity_fixBtn.setOnClickListener {
-                val intent_ = Intent(this, MakeSetActivity::class.java)
-                intent_.putStringArrayListExtra("array_word", array_word)
+                val intent = Intent(this, MakeSetActivity::class.java)
+                intent.putStringArrayListExtra("array_word", array_word)
+                intent.putStringArrayListExtra("array_meaning", array_meaning)
+                intent.putExtra("title", title)
+                intent.putExtra("subtitle", subtitle)
+                intent.putExtra("array_star", array_star)
+                intent.putExtra("fix", true)
+                startActivity(intent)
             }
+
+            ac = this
         }
 
     }
@@ -86,12 +103,20 @@ class SetActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 array_word[i] = it["word"].toString()
                 array_meaning[i] = it["meaning"].toString()
+                array_star[i] = it["star"] as Boolean
                 if(!array_word.contains("")) {
                     setRecycler()
                     dialog!!.dismiss()
                 }
             }
     }
+
+    /*private fun setStarArray(i : Int) {
+        tmp.collection("_").document(i.toString()).get()
+            .addOnSuccessListener {
+
+            }
+    }*/
 
     private fun setRecycler() {
         SetActivity_recycler.layoutManager = LinearLayoutManager(this)
@@ -138,6 +163,19 @@ class SetActivity : AppCompatActivity() {
         val intent = Intent(this, CardActivity::class.java)
         intent.putStringArrayListExtra("array_word", array_word)
         intent.putStringArrayListExtra("array_meaning", array_meaning)
+        intent.putExtra("array_star", array_star)
         startActivity(intent)
+    }
+
+    fun getIsFromOther() : Boolean {
+        return isFromOther
+    }
+
+    fun setStar(index : Int, b : Boolean) {
+        array_star[index] = b
+    }
+
+    fun getStar(index : Int) : Boolean {
+        return array_star[index]
     }
 }

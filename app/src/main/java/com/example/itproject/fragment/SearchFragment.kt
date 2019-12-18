@@ -68,7 +68,7 @@ class SearchFragment : Fragment() {
         db.collection("users").document(email).collection("sets").get()
             .addOnSuccessListener {
                 for(doc in it) {
-                    if(doc.id == text) {
+                    if(doc.id.contains(text)) {
                         list.add(SearchItem(text, doc["subtitle"].toString(), name, email))
                     }
                 }

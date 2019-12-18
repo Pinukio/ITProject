@@ -28,7 +28,7 @@ import kotlin.collections.ArrayList
 class MakeSetActivity : AppCompatActivity() {
 
     private var array_word : ArrayList<String>? = null
-    private var list : MutableList<Model>? = null
+    private var list : ArrayList<Model> = ArrayList()
     private var array_meaning : ArrayList<String>? = null
     private var adapter : MakeSetAdapter? = null
     private var dialog : AlertDialog? = null
@@ -38,17 +38,15 @@ class MakeSetActivity : AppCompatActivity() {
     private var title = ""
     private var subtitle = ""
     private val arrayFinished : ArrayList<Boolean> = ArrayList()
+    private val arrayFinished_ : ArrayList<Boolean> = ArrayList()
+    private var fix : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_make_set)
 
-        val intent = intent
         array_word = intent.getStringArrayListExtra("array_word")
         array_meaning = intent.getStringArrayListExtra("array_meaning")
-        //array_meaning = ArrayList()
-        //array_null = ArrayList()
-        //array_selected = ArrayList()
 
         val alertBuilder : AlertDialog.Builder = AlertDialog.Builder(this)
         val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -77,8 +75,11 @@ class MakeSetActivity : AppCompatActivity() {
             if(array_meaning == null) {
                 array_meaning = ArrayList()
 
-                for(i in 0 until array_word!!.size)
+
+                for(i in 0 until array_word!!.size) {
                     array_meaning!!.add("")
+                    arrayFinished_.add(false)
+                }
 
                 val retrofitService=
                     RetrofitService.create()
@@ -87,39 +88,28 @@ class MakeSetActivity : AppCompatActivity() {
                         override fun onFailure(call: Call<WordRepo>, t: Throwable) {}
                         override fun onResponse(call: Call<WordRepo>, response: Response<WordRepo>) {
                             val wordrepo: WordRepo? = response.body()
+                            arrayFinished_[index] = true
                             if (wordrepo?.meaning?.korean == null) {
-                                array_meaning!![index] = ""
                                 array_null.add(index)
                             }
                             else
                                 array_meaning!![index] = wordrepo.meaning.korean
-                            MakeListTask().execute()
 
+                            if(!arrayFinished_.contains(false)) {
+                                setRecycler()
+                            }
                         }
                     })
                 }
+
+            }
+
+            else {
+                setRecycler()
             }
         }
-
         else {
-            list = mutableListOf<Model>().apply {
-                add(
-                    Model(
-                        Model.TITLE_TYPE,
-                        "",
-                        ""
-                    )
-                )
-            }
-            adapter = MakeSetAdapter(
-                list!!,
-                onItemClick,
-                true
-            )
-            for(i in 0..1)
-            adapter!!.addItem()
-            MakeSet_recycler.adapter = adapter
-            MakeSet_recycler.layoutManager = LinearLayoutManager(this)
+            setEmptyRecycler()
         }
 
         MakeSet_trash.setOnClickListener {
@@ -131,11 +121,12 @@ class MakeSetActivity : AppCompatActivity() {
 
                 array_word = adapter!!.getWords()
                 array_meaning = adapter!!.getMeanings()
+                val beforeTitle : String = title
                 title = adapter!!.getTitleText()
                 subtitle = adapter!!.getSubtitleText()
 
                 when {
-                    title.isEmpty() -> {
+                    title.isBlank() -> {
                         Toast.makeText(applicationContext, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show()
                         moveFocus(0, "title")
                     }
@@ -158,7 +149,16 @@ class MakeSetActivity : AppCompatActivity() {
                             arrayFinished.add(false)
                             addToDB(i)
                         }
-                        //addToDB(0)
+                        fix = intent.getBooleanExtra("fix", false)
+                        if(fix) {
+                            val db = FirebaseFirestore.getInstance()
+                            db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email!!).collection("sets").document(beforeTitle)
+                                .delete()
+                            val s : SetActivity = SetActivity.ac
+                            s.finish()
+                            val edit = getSharedPreferences("shouldRefresh", Context.MODE_PRIVATE).edit()
+                            edit.putBoolean("shouldRefresh", true).apply()
+                        }
                     }
                 }
             }
@@ -170,58 +170,34 @@ class MakeSetActivity : AppCompatActivity() {
         }
     }
 
-    inner class MakeListTask : AsyncTask<Void, Void, MutableList<Model>>() {
+    private fun setEmptyRecycler() {
+        list.add(Model(Model.TITLE_TYPE, "", ""))
+        for(i in 0..1) {
+            list.add(Model(Model.CARD_TYPE, "", ""))
+        }
+        adapter = MakeSetAdapter(list, onItemClick, false)
+        MakeSet_recycler.adapter = adapter
+        MakeSet_recycler.layoutManager = LinearLayoutManager(applicationContext)
+    }
 
-        override fun doInBackground(vararg params: Void?): MutableList<Model> {
-
-            list = mutableListOf<Model>().apply {
-                add(
-                    Model(
-                        Model.TITLE_TYPE,
-                        "",
-                        ""
-                    )
-                )
-                for(i in 0 until array_meaning!!.size) {
-                    add(
-                        Model(
-                            Model.CARD_TYPE,
-                            array_word!![i],
-                            array_meaning!![i]
-                        )
-                    )
-                }
-            }
-            return list!!
-
+    private fun setRecycler() {
+        if(intent.getStringExtra("title") == null) {
+            title = ""
+            subtitle = ""
+        }
+        else {
+            title = intent.getStringExtra("title")!!
+            subtitle = intent.getStringExtra("subtitle")!!
         }
 
-        override fun onPostExecute(result: MutableList<Model>) {
-            super.onPostExecute(result)
-
-            adapter = MakeSetAdapter(
-                result,
-                onItemClick,
-                false
-            )
-            MakeSet_recycler.adapter = adapter
-            MakeSet_recycler.layoutManager = LinearLayoutManager(applicationContext)
-
-            var tmp = false
-
-            for(i in 0 until array_meaning!!.size) {
-                if(array_meaning!![i] == "") { //뜻이 없을 경우 예외처리
-
-                    if(array_null.contains(i)) //api에서 뜻이 리턴되지 않은 경우
-                        tmp = true
-                }
-                else
-                    tmp = true
-            }
-
-            if(tmp)
-                dialog!!.dismiss()
+        list.add(Model(Model.TITLE_TYPE, title, subtitle))
+        for(i in 0 until array_word!!.size) {
+            list.add(Model(Model.CARD_TYPE, array_word!![i], array_meaning!![i]))
         }
+        adapter = MakeSetAdapter(list, onItemClick, false)
+        MakeSet_recycler.adapter = adapter
+        MakeSet_recycler.layoutManager = LinearLayoutManager(applicationContext)
+        dialog!!.dismiss()
     }
 
     private fun moveFocus(position : Int, what : String) {
@@ -262,10 +238,16 @@ class MakeSetActivity : AppCompatActivity() {
         val email: String = FirebaseAuth.getInstance().currentUser!!.email.toString()
 
         val tmp = db.collection("users").document(email).collection("sets").document(title)
+        val array_star : BooleanArray? = intent.getBooleanArrayExtra("array_star")
+        val star : Boolean =
+            if(array_star == null) {
+                false
+            }
+            else array_star[i]
         val map = hashMapOf(
             "word" to array_word!![i],
             "meaning" to array_meaning!![i],
-            "star" to false
+            "star" to star
         )
 
         tmp.collection("_").document(i.toString()).set(map)
@@ -282,12 +264,15 @@ class MakeSetActivity : AppCompatActivity() {
                         "lastIndex" to 0,
                         "array_incorrect" to ArrayList<Int>()
                     )
+
                     tmp.set(subMap)
 
-                    val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
-                    val et : SharedPreferences.Editor = sf.edit()
-                    val count_before = sf.getInt("sets", 0)
-                    et.putInt("sets", count_before + 1).apply()
+                    if(!fix) {
+                        val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)
+                        val et : SharedPreferences.Editor = sf.edit()
+                        val count_before = sf.getInt("sets", 0)
+                        et.putInt("sets", count_before + 1).apply()
+                    }
 
                     intent.putExtra("title", title)
                     intent.putExtra("subtitle", subtitle)

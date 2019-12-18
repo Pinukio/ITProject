@@ -1,5 +1,6 @@
 package com.example.itproject.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class SetAdapter(private val list : MutableList<Model>, private val name : String, private val activity : SetActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val array_star : ArrayList<Boolean> = ArrayList()
+    //private val array_star : ArrayList<Boolean> = ArrayList()
     private lateinit var tmp : CollectionReference
     private var title = ""
     private var titleCreated : Boolean = false
@@ -27,11 +28,11 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
         val size = list.size - 1
         val email = FirebaseAuth.getInstance().currentUser!!.email!!
         tmp = FirebaseFirestore.getInstance().collection("users").document(email).collection("sets")
-        if(array_star.size != size) {
+        /*if(array_star.size != size) {
             for(i in 0 until size) {
                 array_star.add(false)
             }
-        }
+        }*/
         return when(viewType) {
 
             Model.TITLE_TYPE -> {
@@ -60,17 +61,23 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
                 if(!titleCreated) {
                     title = item.text
                     (holder as TitleTypeViewHolder).title.text = title
-                    if(item.text2 != "")
+                    if(item.text2.isNotBlank())
                         holder.subtitle.text = item.text2
                     else
                         holder.subtitle.visibility = View.GONE
                     holder.countText.text = "단어 ${list.size - 1}개"
                     holder.nameText.text = name
-                    holder.studyBtn.setOnClickListener {
-                        activity.moveToStudy()
+                    if(activity.getIsFromOther()) {
+                        holder.studyBtn.visibility = View.GONE
+                        holder.cardBtn.visibility = View.GONE
                     }
-                    holder.cardBtn.setOnClickListener {
-                        activity.moveToCard()
+                    else {
+                        holder.studyBtn.setOnClickListener {
+                            activity.moveToStudy()
+                        }
+                        holder.cardBtn.setOnClickListener {
+                            activity.moveToCard()
+                        }
                     }
                     titleCreated = true
                 }
@@ -80,16 +87,20 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
                 if(!cardCreated) {
                     (holder as CardTypeViewHolder).word.text = item.text
                     holder.meaning.text = item.text2
+                    val index = position - 1
+                    val star = activity.getStar(index)
+                    if(star)
+                        holder.star.setImageResource(R.drawable.star_yellow)
                     holder.star.setOnClickListener {
-                        val index = position - 1
-                        if(!array_star[index]) {
+                        if(!star) {
                             holder.star.setImageResource(R.drawable.star_yellow)
-                            array_star[index] = true
+                            activity.setStar(index, true)
                             tmp.document(title).collection("_").document(index.toString()).update("star", true)
                         }
                         else {
                             holder.star.setImageResource(R.drawable.star_white)
-                            array_star[index] = false
+                            //array_star[index] = false
+                            activity.setStar(index, false)
                             tmp.document(title).collection("_").document(index.toString()).update("star", false)
                         }
                     }
