@@ -1,6 +1,8 @@
 package com.example.itproject.fragment
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +19,7 @@ import com.example.itproject.activity.SetActivity
 import com.example.itproject.adapter.SearchAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class SearchFragment : Fragment() {
 
@@ -64,7 +67,18 @@ class SearchFragment : Fragment() {
                     if(doc.id != currentEmail) {
                         array_finished.add(false)
                         list.clear()
-                        setArray(text, doc.id, doc["profile"].toString(), doc["name"].toString(), index)
+                        val MEGABYTE: Long = 1024 * 1024
+                        val profileRef = FirebaseStorage.getInstance().reference.child("${doc.id}/profile.jpg")
+                        var bitmap : Bitmap?
+
+                        profileRef.getBytes(MEGABYTE).addOnCompleteListener { it_ ->
+                            bitmap = if(it_.isSuccessful) {
+                                BitmapFactory.decodeByteArray(it_.result, 0, it_.result!!.size)
+                            } else {
+                                null
+                            }
+                            setArray(text, doc.id, bitmap, doc["name"].toString(), index)
+                        }
                     }
                     else
                         array_finished.add(true)
@@ -72,12 +86,12 @@ class SearchFragment : Fragment() {
             }
     }
 
-    private fun setArray(text : String, email : String, profileUri : String, name : String, index : Int) {
+    private fun setArray(text : String, email : String, profile : Bitmap?, name : String, index : Int) {
         db.collection("users").document(email).collection("sets").get()
             .addOnSuccessListener {
                 for(doc in it) {
                     if(doc.id.contains(text)) {
-                        list.add(SearchItem(doc.id, doc["subtitle"].toString(), name, email, profileUri))
+                        list.add(SearchItem(doc.id, doc["subtitle"].toString(), name, email, profile))
                     }
                 }
                 array_finished[index] = true

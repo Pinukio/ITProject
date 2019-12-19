@@ -2,6 +2,8 @@ package com.example.itproject.activity
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +15,7 @@ import com.example.itproject.adapter.SetAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_set.*
 
 class SetActivity : AppCompatActivity() {
@@ -134,14 +137,22 @@ class SetActivity : AppCompatActivity() {
             }
         }
         var name: String
-        var profile : String
+        var profile : Bitmap?
         db.collection("users").document(email).get()
             .addOnSuccessListener {
                 name = it["name"].toString()
-                profile = it["profile"].toString()
-                adapter =
-                    SetAdapter(list!!, name, profile, this)
-                SetActivity_recycler.adapter = adapter
+                val MEGABYTE: Long = 1024 * 1024
+                val profileRef = FirebaseStorage.getInstance().reference.child("${email}/profile.jpg")
+                profileRef.getBytes(MEGABYTE).addOnCompleteListener {it_ ->
+                    profile = if(it_.isSuccessful) {
+                        BitmapFactory.decodeByteArray(it_.result, 0, it_.result!!.size)
+                    } else {
+                        null
+                    }
+                    adapter = SetAdapter(list!!, name, profile, this)
+                    SetActivity_recycler.adapter = adapter
+                }
+
             }
     }
 

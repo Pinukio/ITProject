@@ -92,33 +92,6 @@
 
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="340dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="120dp"
-            android:background="@drawable/button_background"
-            android:layout_gravity="center"
-            app:cardElevation="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:background="@drawable/button_background"
-                android:id="@+id/Profile_btn">
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="비밀번호 변경"
-                    android:textColor="@color/colorMain"
-                    android:gravity="center"
-                    android:layout_gravity="center" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
     </FrameLayout>
 
 </LinearLayout>

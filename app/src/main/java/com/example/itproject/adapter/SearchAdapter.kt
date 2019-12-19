@@ -33,10 +33,10 @@ class SearchAdapter(private val list : ArrayList<SearchItem>, private val fragme
             holder.subtitle.text = item.subtitle
         holder.name.text = item.name
         holder.email.text = item.email
-        if(item.profileUri.isEmpty())
+        if(item.profile == null)
             holder.profile.setImageResource(R.drawable.profile_user)
         else
-            holder.profile.setImageURI(Uri.parse(item.profileUri))
+            holder.profile.setImageBitmap(item.profile)
     }
 
     inner class MyViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {

@@ -5,13 +5,16 @@ import android.content.Intent
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.itproject.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_sign_up.*
+import java.io.ByteArrayOutputStream
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -64,5 +67,14 @@ class SignUpActivity : AppCompatActivity() {
             }
         }
     }
+
+    /*private fun uploadFile(bitmap: Bitmap) {
+        val email = FirebaseAuth.getInstance().currentUser!!.email!!
+        val profileRef = FirebaseStorage.getInstance().reference.child("${email}/profile.jpg")
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos)
+        val data: ByteArray = baos.toByteArray()
+        profileRef.putBytes(data)
+    }*/
 
 }

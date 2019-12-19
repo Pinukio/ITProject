@@ -1,5 +1,6 @@
 package com.example.itproject.adapter
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 
-class SetAdapter(private val list : MutableList<Model>, private val name : String, private val profileUri : String, private val activity : SetActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SetAdapter(private val list : MutableList<Model>, private val name : String, private val profile : Bitmap?, private val activity : SetActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var tmp : CollectionReference
     private var title = ""
@@ -77,10 +78,10 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
                             activity.moveToCard()
                         }
                     }
-                    if(profileUri.isEmpty())
+                    if(profile == null)
                         holder.profile.setImageResource(R.drawable.profile_user)
                     else
-                        holder.profile.setImageURI(Uri.parse(profileUri))
+                        holder.profile.setImageBitmap(profile)
                     titleCreated = true
                 }
             }
