@@ -1,5 +1,6 @@
 package com.example.itproject.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +9,11 @@ import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itproject.Model
 import com.example.itproject.R
+import com.example.itproject.activity.MakeSetActivity
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCheck: OnItemCheckListener, private val isEmpty : Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCheck: OnItemCheckListener, isEmpty : Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var array_word : ArrayList<String>? = ArrayList()
     private var array_meaning : ArrayList<String>? = ArrayList()
@@ -26,6 +28,15 @@ class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCh
     interface OnItemCheckListener {
         fun onItemCheck(index : Int)
         fun onItemUncheck(index : Int)
+    }
+
+    init {
+        if(!isEmpty) {
+            for(i in 1 until list.size) {
+                array_word!!.add(list[i].text)
+                array_meaning!!.add(list[i].text2)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -68,12 +79,6 @@ class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCh
 
                 if(array_holder.size < position) {
                     (holder as CardTypeViewHolder).et_word.setText(item.text)
-                    if(!isEmpty && !cardCreated) {
-                        array_word!!.add(item.text)
-                        array_meaning!!.add(item.text2)
-                        if(array_word!!.size == list.size - 1)
-                            cardCreated = true
-                    }
                     holder.et_meaning.setText(item.text2)
                     holder.checkbox.isChecked = false
                     holder.checkbox.setOnClickListener {
@@ -83,7 +88,8 @@ class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCh
                             onItemCheck.onItemUncheck(holder.adapterPosition)
 
                     }
-                    holder.et_word.requestFocus()
+                    //activity.scrollRecycler(position + 1)
+                    //holder.et_word.requestFocus()
                     array_holder.add(holder)
                 }
             }

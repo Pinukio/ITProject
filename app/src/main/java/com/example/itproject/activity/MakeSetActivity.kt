@@ -154,9 +154,9 @@ class MakeSetActivity : AppCompatActivity() {
                                 .delete()
                             val s : SetActivity = SetActivity.ac
                             s.finish()
-                            val edit = getSharedPreferences("shouldRefresh", Context.MODE_PRIVATE).edit()
-                            edit.putBoolean("shouldRefresh", true).apply()
                         }
+                        val edit = getSharedPreferences("shouldRefresh", Context.MODE_PRIVATE).edit()
+                        edit.putBoolean("shouldRefresh", true).apply()
                     }
                 }
             }
