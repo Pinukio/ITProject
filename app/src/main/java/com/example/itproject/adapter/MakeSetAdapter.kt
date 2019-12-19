@@ -13,7 +13,7 @@ import com.example.itproject.activity.MakeSetActivity
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCheck: OnItemCheckListener, isEmpty : Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCheck: OnItemCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var array_word : ArrayList<String>? = ArrayList()
     private var array_meaning : ArrayList<String>? = ArrayList()
@@ -22,7 +22,6 @@ class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCh
     private var array_selected : ArrayList<Int> = ArrayList()
     private var array_holder : ArrayList<CardTypeViewHolder> = ArrayList()
     private var titleCreated : Boolean = false
-    private var cardCreated : Boolean = false
     private lateinit var titleHolder : TitleTypeViewHolder
 
     interface OnItemCheckListener {
@@ -31,11 +30,9 @@ class MakeSetAdapter(private val list : MutableList<Model>, private val onItemCh
     }
 
     init {
-        if(!isEmpty) {
-            for(i in 1 until list.size) {
-                array_word!!.add(list[i].text)
-                array_meaning!!.add(list[i].text2)
-            }
+        for(i in 1 until list.size) {
+            array_word!!.add(list[i].text)
+            array_meaning!!.add(list[i].text2)
         }
     }
 

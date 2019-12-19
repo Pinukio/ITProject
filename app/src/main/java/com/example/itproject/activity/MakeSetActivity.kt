@@ -173,7 +173,7 @@ class MakeSetActivity : AppCompatActivity() {
         for(i in 0..1) {
             list.add(Model(Model.CARD_TYPE, "", ""))
         }
-        adapter = MakeSetAdapter(list, onItemClick, false)
+        adapter = MakeSetAdapter(list, onItemClick)
         MakeSet_recycler.adapter = adapter
         MakeSet_recycler.layoutManager = LinearLayoutManager(applicationContext)
     }
@@ -192,7 +192,7 @@ class MakeSetActivity : AppCompatActivity() {
         for(i in 0 until array_word!!.size) {
             list.add(Model(Model.CARD_TYPE, array_word!![i], array_meaning!![i]))
         }
-        adapter = MakeSetAdapter(list, onItemClick, false)
+        adapter = MakeSetAdapter(list, onItemClick)
         MakeSet_recycler.adapter = adapter
         MakeSet_recycler.layoutManager = LinearLayoutManager(applicationContext)
         dialog!!.dismiss()
