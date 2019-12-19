@@ -24,9 +24,9 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@drawable/camera"
-        android:layout_toRightOf="@id/main_button_sub"
+        android:layout_toEndOf="@id/main_button_sub"
         android:layout_marginTop="485dp"
-        android:layout_marginLeft="60dp"
+        android:layout_marginStart="60dp"
         android:id="@+id/imageview_camera"
         />
 
@@ -34,9 +34,9 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/pencil_w"
-        android:layout_toLeftOf="@+id/main_button_sub"
+        android:layout_toStartOf="@+id/main_button_sub"
         android:layout_marginTop="490dp"
-        android:layout_marginRight="60dp"
+        android:layout_marginEnd="60dp"
         android:id="@+id/imageview_pencil"
         />
 

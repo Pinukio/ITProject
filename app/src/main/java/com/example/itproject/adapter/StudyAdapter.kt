@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,7 +42,6 @@ class StudyAdapter(private val array_meaning : ArrayList<String>, private val ac
                 0
         }
         else {
-            //array_incorrect =
             arraySize = array_meaning.size
             index = activity.getLastIndex()
         }
@@ -120,7 +118,6 @@ class StudyAdapter(private val array_meaning : ArrayList<String>, private val ac
                         (array_meaning.size - array_incorrect.size).toFloat() / array_meaning.size.toFloat() * 100
                     else
                         100f
-                    Log.i(array_meaning.size.toString(), array_incorrect.size.toString())
 
                     if(isRestarted) {
                         if(array_incorrect.size > index && !tmp)
@@ -221,13 +218,6 @@ class StudyAdapter(private val array_meaning : ArrayList<String>, private val ac
             "array_incorrect" to array_incorrect,
             "lastIndex" to index
         )
-        /*if(isRestarted)
-            map = hashMapOf(
-                "progress" to progress,
-                "array_incorrect" to array_incorrect,
-                "lastIndex" to index
-            )
-        else*/
 
         db.collection("users").document(email).collection("sets").document(title).update(map)
     }

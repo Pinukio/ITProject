@@ -76,34 +76,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="470dp"
                         android:background="@color/colorMain"
-                        android:orientation="vertical">
-                        <!--
-                                            <ImageView
-                                                android:layout_width="25dp"
-                                                android:layout_height="25dp"
-                                                android:layout_margin="15dp"
-                                                android:src="@drawable/menu"
-                                                android:id="@+id/Main_menu"/>
-                        -->
-                        <!--<TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="Text to Word"
-                            android:textColor="#000000"
-                            android:textSize="22sp" />-->
+                        android:orientation="vertical"/>
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recyclerview_main"
-                            android:layout_width="300dp"
-                            android:layout_height="290dp"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="20dp"
-                            android:overScrollMode="never">
-
-                        </androidx.recyclerview.widget.RecyclerView>
-
-                    </LinearLayout>
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:layout_width="80dp"

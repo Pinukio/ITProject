@@ -268,7 +268,7 @@ class PictureFragment : Fragment() {
         }
     }
 
-    fun dispatchTakePictureIntent() {
+    private fun dispatchTakePictureIntent() {
 
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
@@ -290,7 +290,7 @@ class PictureFragment : Fragment() {
         }
     }
 
-    fun rotateImage(source: Bitmap, angle: Float): Bitmap {
+    private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
         val matrix = Matrix()
         matrix.postRotate(angle)
         return Bitmap.createBitmap(

@@ -25,7 +25,6 @@ class SearchFragment : Fragment() {
     private lateinit var db : FirebaseFirestore
     private val list : ArrayList<SearchItem> = ArrayList()
     private lateinit var recycler : RecyclerView
-    //private val array_profileUri : ArrayList<String> = ArrayList()
     private var adapter : SearchAdapter = SearchAdapter(ArrayList(), this)
 
     override fun onCreateView(
@@ -79,13 +78,11 @@ class SearchFragment : Fragment() {
                 for(doc in it) {
                     if(doc.id.contains(text)) {
                         list.add(SearchItem(doc.id, doc["subtitle"].toString(), name, email, profileUri))
-                        //array_profileUri.add(profileUri)
                     }
                 }
                 array_finished[index] = true
                 if(!array_finished.contains(false)) {
                     recycler.layoutManager = LinearLayoutManager(context!!)
-                    //val adapter = SearchAdapter(list, this)
                     adapter.changeList(list)
                     recycler.adapter = adapter
                     dialog.dismiss()
@@ -100,9 +97,5 @@ class SearchFragment : Fragment() {
         intent.putExtra("email", email)
         startActivity(intent)
     }
-
-    /*fun getProfileUri(i : Int) : String{
-        return array_profileUri[i]
-    }*/
 
 }

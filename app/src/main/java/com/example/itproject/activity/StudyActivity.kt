@@ -3,7 +3,6 @@ package com.example.itproject.activity
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itproject.R
 import com.example.itproject.adapter.StudyAdapter

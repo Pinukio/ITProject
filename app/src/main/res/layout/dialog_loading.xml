@@ -28,4 +28,5 @@
         android:gravity="center"
         android:textSize="15sp"
         android:text="잠시만 기다려 주세요." />
+
 </LinearLayout>

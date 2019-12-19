@@ -156,9 +156,6 @@ class MainActivity : AppCompatActivity() {
                 Profile_fixbtn.visibility = View.GONE
 
                 when(where) {
-                    /*0 -> { // home
-                        nav.closeMenu()
-                    }*/
                     1 -> {
                         fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("ManageSet")!!).commit()
                     }
@@ -353,13 +350,6 @@ class MainActivity : AppCompatActivity() {
             fragmentManager.beginTransaction().remove(f).commit()
         }
     }
-
-    /*private fun removePF() { //profile fragment
-        val f = fragmentManager.findFragmentByTag("Profile")
-        if(f != null) {
-            fragmentManager.beginTransaction().remove(f).commit()
-        }
-    }*/
 
     fun getSetsSize() : Int{
         val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)

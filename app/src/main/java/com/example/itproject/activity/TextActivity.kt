@@ -150,7 +150,6 @@ class TextActivity : AppCompatActivity() {
                                 array_word.add(c)
                                 array_isClicked[index] = true
 
-
                             }
 
                             else {
@@ -159,7 +158,6 @@ class TextActivity : AppCompatActivity() {
                                 array_isClicked[index] = false
 
                             }
-
                         }
 
                         textView.measure(0, 0)

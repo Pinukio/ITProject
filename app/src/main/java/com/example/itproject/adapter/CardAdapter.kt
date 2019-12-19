@@ -3,7 +3,6 @@ package com.example.itproject.adapter
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,8 +20,6 @@ class CardAdapter(private val array_word: ArrayList<String>, private val array_m
     private lateinit var textView : TextView
     private var cnt = 0
     private val array_view : ArrayList<View> = ArrayList()
-    //private val array_star : ArrayList<Boolean> = ArrayList()
-    //private lateinit var listener : View.OnClickListener
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.card, parent, false)
@@ -68,13 +65,6 @@ class CardAdapter(private val array_word: ArrayList<String>, private val array_m
     override fun onBackStackChanged() {
 
     }
-
-    /*fun setOnClick(b : Boolean) {
-        when(b) {
-            false -> textView.setOnClickListener(null)
-            true -> textView.setOnClickListener(listener)
-        }
-    }*/
 
     fun click(position : Int) {
         ++cnt
