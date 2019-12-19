@@ -15,52 +15,16 @@
         android:orientation="vertical"
         android:layout_weight="3.5"
         android:weightSum="10">
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1.5"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:weightSum="10"
-            android:layout_weight="1.2">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/user"
-                android:layout_weight="5"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.8"
-            android:weightSum="10">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="닉네임"
-                android:textColor="#000000"
-                android:layout_weight="5"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
-                android:textSize="20sp"/>
-
-        </LinearLayout>
 
         <View
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.2"/>
+            android:layout_weight="2"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.56"
+            android:layout_weight="1.2"
             android:weightSum="10"
             android:id="@+id/Menu_home">
 
@@ -86,15 +50,10 @@
 
         </LinearLayout>
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.56"
+            android:layout_weight="1.2"
             android:weightSum="10"
             android:id="@+id/Menu_manage">
 
@@ -121,15 +80,10 @@
 
         </LinearLayout>
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.56"
+            android:layout_weight="1.2"
             android:weightSum="10"
             android:id="@+id/Menu_search">
 
@@ -155,15 +109,10 @@
 
         </LinearLayout>
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.56"
+            android:layout_weight="1.2"
             android:weightSum="10"
             android:id="@+id/Menu_settings">
 
@@ -189,15 +138,10 @@
 
         </LinearLayout>
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.56"
+            android:layout_weight="1.2"
             android:weightSum="10"
             android:id="@+id/Menu_logout">
 
@@ -226,7 +170,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1.5"/>
+            android:layout_weight="2"/>
 
     </LinearLayout>
 

@@ -16,14 +16,14 @@ import androidx.fragment.app.Fragment
 import com.example.itproject.R
 import com.example.itproject.activity.MainActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import de.hdodenhof.circleimageview.CircleImageView
 
 class ProfileFragment : Fragment() {
     private lateinit var dialog : AlertDialog
     private lateinit var image : ImageView
-    private lateinit var d : AlertDialog
+    private lateinit var ad : AlertDialog
+    private lateinit var email : String
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,6 +38,7 @@ class ProfileFragment : Fragment() {
         alertBuilder.setCancelable(false)
         dialog = alertBuilder.create()
         dialog.show()
+        email = user.email!!
 
         (activity as MainActivity).getFixBtn().setOnClickListener {
             val builder : AlertDialog.Builder = AlertDialog.Builder(context!!)
@@ -59,17 +60,17 @@ class ProfileFragment : Fragment() {
                     dialog.cancel()
                 }
                 builder_.setPositiveButton("변경") {d, _ ->
-                    val email = user.email!!
+
                     val text = edit.text.toString()
                     if(text.isNotBlank()) {
                         val map : HashMap<String, Any> = hashMapOf("name" to edit.text.toString())
                         dialog.show()
+                        ad.dismiss()
                         FirebaseFirestore.getInstance().collection("users").document(email).update(map)
                             .addOnSuccessListener {
                                 Toast.makeText(context, "변경되었습니다.", Toast.LENGTH_SHORT).show()
                                 view.findViewById<TextView>(R.id.Profile_name).text = text
                                 dialog.dismiss()
-                                d.dismiss()
                             }
                     }
                     else {
@@ -79,18 +80,21 @@ class ProfileFragment : Fragment() {
                 builder_.show()
             }
             builder.setView(editProfile)
-            d = builder.create()
-            d.show()
+            ad = builder.create()
+            ad.show()
         }
 
         image = view.findViewById<CircleImageView>(R.id.Profile_image)
-        image.setImageURI(Uri.parse(user.photoUrl.toString()))
         val email = user.email!!
         view.findViewById<TextView>(R.id.Profile_email).text = email
         view.findViewById<TextView>(R.id.Profile_size_sets).text = "${(activity as MainActivity).getSetsSize()}개"
         FirebaseFirestore.getInstance().collection("users").document(email).get()
             .addOnSuccessListener {
                 view.findViewById<TextView>(R.id.Profile_name).text = it["name"].toString()
+                if(it["profile"].toString().isEmpty())
+                    image.setImageResource(R.drawable.profile_user)
+                else
+                    image.setImageURI(Uri.parse(it["profile"].toString()))
                 dialog.dismiss()
             }
         return view
@@ -99,12 +103,13 @@ class ProfileFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == 100 && resultCode == Activity.RESULT_OK) {
-            val profileUpdates : UserProfileChangeRequest = UserProfileChangeRequest.Builder()
-                .setPhotoUri(data!!.data).build()
-            FirebaseAuth.getInstance().currentUser!!.updateProfile(profileUpdates)
+            val nameMap : HashMap<String, Any> = hashMapOf("profile" to data!!.data.toString())
+            FirebaseFirestore.getInstance().collection("users").document(email).update(nameMap)
                 .addOnSuccessListener {
                     image.setImageURI(data.data)
                     dialog.dismiss()
+                    ad.dismiss()
+                    Toast.makeText(context, "변경되었습니다.", Toast.LENGTH_SHORT).show()
                 }
         }
     }

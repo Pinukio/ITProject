@@ -154,6 +154,7 @@ class MainActivity : AppCompatActivity() {
                 count = getSetsSize()
                 textview_allSet_main.text = "보유 중인 학습 세트 : ${count}개"
                 ManageSet_trash.visibility = View.GONE
+                Profile_fixbtn.visibility = View.GONE
 
                 when(where) {
                     /*0 -> { // home

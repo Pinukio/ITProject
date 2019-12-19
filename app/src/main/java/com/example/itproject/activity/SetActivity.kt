@@ -33,6 +33,7 @@ class SetActivity : AppCompatActivity() {
     private var lastIndex : Int = 0
     private var isFromOther : Boolean = false
     private lateinit var array_star : BooleanArray
+    private var fix = true
     companion object {
         lateinit var ac : SetActivity
     }
@@ -60,6 +61,7 @@ class SetActivity : AppCompatActivity() {
                 email = intent.getStringExtra("email")!!
                 isFromOther = true
                 SetActivity_fixBtn.setImageResource(R.drawable.share__white)
+                fix = false
             }
             title = intent.getStringExtra("title")!!
             subtitle = intent.getStringExtra("subtitle")!!
@@ -89,7 +91,7 @@ class SetActivity : AppCompatActivity() {
                 intent.putExtra("title", title)
                 intent.putExtra("subtitle", subtitle)
                 intent.putExtra("array_star", array_star)
-                intent.putExtra("fix", true)
+                intent.putExtra("fix", fix)
                 startActivity(intent)
             }
 
@@ -139,11 +141,13 @@ class SetActivity : AppCompatActivity() {
             }
         }
         var name: String
+        var profile : String
         db.collection("users").document(email).get()
             .addOnSuccessListener {
                 name = it["name"].toString()
+                profile = it["profile"].toString()
                 val adapter =
-                    SetAdapter(list!!, name, this)
+                    SetAdapter(list!!, name, profile, this)
                 SetActivity_recycler.adapter = adapter
             }
     }

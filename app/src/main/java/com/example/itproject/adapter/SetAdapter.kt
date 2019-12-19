@@ -1,5 +1,6 @@
 package com.example.itproject.adapter
 
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,24 +16,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 
-class SetAdapter(private val list : MutableList<Model>, private val name : String, private val activity : SetActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SetAdapter(private val list : MutableList<Model>, private val name : String, private val profileUri : String, private val activity : SetActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     //private val array_star : ArrayList<Boolean> = ArrayList()
     private lateinit var tmp : CollectionReference
     private var title = ""
     private var titleCreated : Boolean = false
     private var cardCreated : Boolean = false
+    private var isFromOther : Boolean = false
+    init{
+        isFromOther = activity.getIsFromOther()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view : View?
-        val size = list.size - 1
         val email = FirebaseAuth.getInstance().currentUser!!.email!!
         tmp = FirebaseFirestore.getInstance().collection("users").document(email).collection("sets")
-        /*if(array_star.size != size) {
-            for(i in 0 until size) {
-                array_star.add(false)
-            }
-        }*/
         return when(viewType) {
 
             Model.TITLE_TYPE -> {
@@ -67,7 +66,7 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
                         holder.subtitle.visibility = View.GONE
                     holder.countText.text = "단어 ${list.size - 1}개"
                     holder.nameText.text = name
-                    if(activity.getIsFromOther()) {
+                    if(isFromOther) {
                         holder.studyBtn.visibility = View.GONE
                         holder.cardBtn.visibility = View.GONE
                     }
@@ -79,6 +78,10 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
                             activity.moveToCard()
                         }
                     }
+                    if(profileUri.isEmpty())
+                        holder.profile.setImageResource(R.drawable.profile_user)
+                    else
+                        holder.profile.setImageURI(Uri.parse(profileUri))
                     titleCreated = true
                 }
             }
@@ -91,17 +94,18 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
                     val star = activity.getStar(index)
                     if(star)
                         holder.star.setImageResource(R.drawable.star_yellow)
-                    holder.star.setOnClickListener {
-                        if(!star) {
-                            holder.star.setImageResource(R.drawable.star_yellow)
-                            activity.setStar(index, true)
-                            tmp.document(title).collection("_").document(index.toString()).update("star", true)
-                        }
-                        else {
-                            holder.star.setImageResource(R.drawable.star_white)
-                            //array_star[index] = false
-                            activity.setStar(index, false)
-                            tmp.document(title).collection("_").document(index.toString()).update("star", false)
+                    if(!isFromOther) {
+                        holder.star.setOnClickListener {
+                            if(!star) {
+                                holder.star.setImageResource(R.drawable.star_yellow)
+                                activity.setStar(index, true)
+                                tmp.document(title).collection("_").document(index.toString()).update("star", true)
+                            }
+                            else {
+                                holder.star.setImageResource(R.drawable.star_white)
+                                activity.setStar(index, false)
+                                tmp.document(title).collection("_").document(index.toString()).update("star", false)
+                            }
                         }
                     }
                     if(position == list.size - 1)
@@ -119,6 +123,7 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
         val nameText : TextView = itemView.findViewById(R.id.SetActivity_name)
         val studyBtn : Button = itemView.findViewById(R.id.SetActivity_study)
         val cardBtn : Button = itemView.findViewById(R.id.SetActivity_card)
+        val profile : ImageView = itemView.findViewById(R.id.SetActivity_profile)
     }
 
     inner class CardTypeViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {

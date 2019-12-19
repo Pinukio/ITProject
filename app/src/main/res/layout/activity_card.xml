@@ -56,7 +56,8 @@
         android:layout_marginStart="60dp"
         android:layout_marginEnd="60dp"
         android:id="@+id/Card_card"
-        app:swipe_rotation="10"
+        app:swipe_rotation="5"
+        app:stack_rotation="0"
         />
 
 </LinearLayout>

@@ -1,8 +1,10 @@
 package com.example.itproject.adapter
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itproject.R
@@ -21,15 +23,20 @@ class SearchAdapter(private val list : ArrayList<SearchItem>, private val fragme
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as MyViewHolder).title.text = list[position].title
-        if(list[position].subtitle.isBlank()) {
+        val item = list[position]
+        (holder as MyViewHolder).title.text = item.title
+        if(item.subtitle.isBlank()) {
             holder.subtitle.visibility = View.GONE
             holder.subtitle.text = ""
         }
         else
-            holder.subtitle.text = list[position].subtitle
-        holder.name.text = list[position].name
-        holder.email.text = list[position].email
+            holder.subtitle.text = item.subtitle
+        holder.name.text = item.name
+        holder.email.text = item.email
+        if(item.profileUri.isEmpty())
+            holder.profile.setImageResource(R.drawable.profile_user)
+        else
+            holder.profile.setImageURI(Uri.parse(item.profileUri))
     }
 
     inner class MyViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
@@ -37,6 +44,7 @@ class SearchAdapter(private val list : ArrayList<SearchItem>, private val fragme
         val subtitle : TextView = itemView.findViewById(R.id.Search_subtitle)
         val name : TextView = itemView.findViewById(R.id.Search_name)
         val email : TextView = itemView.findViewById(R.id.Search_email)
+        val profile : ImageView = itemView.findViewById(R.id.Search_profile)
         init {
             itemView.setOnClickListener {
                 val titleText = title.text.toString()

@@ -25,6 +25,7 @@ class SearchFragment : Fragment() {
     private lateinit var db : FirebaseFirestore
     private val list : ArrayList<SearchItem> = ArrayList()
     private lateinit var recycler : RecyclerView
+    //private val array_profileUri : ArrayList<String> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,9 +62,8 @@ class SearchFragment : Fragment() {
                 array_finished.clear()
                 it.forEachIndexed { index, doc ->
                     if(doc.id != currentEmail) {
-                        //array_email.add(doc.id)
                         array_finished.add(false)
-                        setArray(text, doc.id, doc["name"].toString(), index)
+                        setArray(text, doc.id, doc["profile"].toString(), doc["name"].toString(), index)
                     }
                     else
                         array_finished.add(true)
@@ -71,12 +71,13 @@ class SearchFragment : Fragment() {
             }
     }
 
-    private fun setArray(text : String, email : String, name : String, index : Int) {
+    private fun setArray(text : String, email : String, profileUri : String, name : String, index : Int) {
         db.collection("users").document(email).collection("sets").get()
             .addOnSuccessListener {
                 for(doc in it) {
                     if(doc.id.contains(text)) {
-                        list.add(SearchItem(doc.id, doc["subtitle"].toString(), name, email))
+                        list.add(SearchItem(doc.id, doc["subtitle"].toString(), name, email, profileUri))
+                        //array_profileUri.add(profileUri)
                     }
                 }
                 array_finished[index] = true
@@ -96,5 +97,9 @@ class SearchFragment : Fragment() {
         intent.putExtra("email", email)
         startActivity(intent)
     }
+
+    /*fun getProfileUri(i : Int) : String{
+        return array_profileUri[i]
+    }*/
 
 }

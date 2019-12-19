@@ -4,8 +4,8 @@ buildscript {
     ext.kotlin_version = '1.3.50'
     repositories {
         google()
+        maven { url "http://dl.bintray.com/geeksynergy/GeekSupport" }
         jcenter()
-        
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
