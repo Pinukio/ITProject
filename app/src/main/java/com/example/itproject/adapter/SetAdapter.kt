@@ -18,12 +18,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class SetAdapter(private val list : MutableList<Model>, private val name : String, private val profileUri : String, private val activity : SetActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    //private val array_star : ArrayList<Boolean> = ArrayList()
     private lateinit var tmp : CollectionReference
     private var title = ""
     private var titleCreated : Boolean = false
     private var cardCreated : Boolean = false
     private var isFromOther : Boolean = false
+    private val array_holder : ArrayList<CardTypeViewHolder> = ArrayList()
     init{
         isFromOther = activity.getIsFromOther()
     }
@@ -110,6 +110,7 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
                     }
                     if(position == list.size - 1)
                         cardCreated = true
+                    array_holder.add(holder)
                 }
 
             }
@@ -134,5 +135,16 @@ class SetAdapter(private val list : MutableList<Model>, private val name : Strin
 
     override fun getItemViewType(position: Int): Int {
         return list[position].type
+    }
+
+    fun changeStar(i : Int, b : Boolean) {
+        if(b) {
+            array_holder[i].star.callOnClick()
+            activity.setStar(i, b)
+        }
+        else {
+            array_holder[i].star.callOnClick()
+            activity.setStar(i, b)
+        }
     }
 }

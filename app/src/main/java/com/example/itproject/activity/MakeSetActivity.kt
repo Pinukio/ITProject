@@ -262,6 +262,7 @@ class MakeSetActivity : AppCompatActivity() {
                         "size" to count,
                         "progress" to 0f,
                         "lastIndex" to 0,
+                        "lastIndex_card" to 0,
                         "array_incorrect" to ArrayList<Int>()
                     )
 

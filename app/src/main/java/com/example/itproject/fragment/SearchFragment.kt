@@ -26,6 +26,7 @@ class SearchFragment : Fragment() {
     private val list : ArrayList<SearchItem> = ArrayList()
     private lateinit var recycler : RecyclerView
     //private val array_profileUri : ArrayList<String> = ArrayList()
+    private var adapter : SearchAdapter = SearchAdapter(ArrayList(), this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,6 +64,7 @@ class SearchFragment : Fragment() {
                 it.forEachIndexed { index, doc ->
                     if(doc.id != currentEmail) {
                         array_finished.add(false)
+                        list.clear()
                         setArray(text, doc.id, doc["profile"].toString(), doc["name"].toString(), index)
                     }
                     else
@@ -83,7 +85,8 @@ class SearchFragment : Fragment() {
                 array_finished[index] = true
                 if(!array_finished.contains(false)) {
                     recycler.layoutManager = LinearLayoutManager(context!!)
-                    val adapter = SearchAdapter(list, this)
+                    //val adapter = SearchAdapter(list, this)
+                    adapter.changeList(list)
                     recycler.adapter = adapter
                     dialog.dismiss()
                 }

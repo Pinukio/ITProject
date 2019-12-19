@@ -54,4 +54,10 @@ class SearchAdapter(private val list : ArrayList<SearchItem>, private val fragme
             }
         }
     }
+
+    fun changeList(list_ : ArrayList<SearchItem>) {
+        list.clear()
+        list.addAll(list_)
+        notifyDataSetChanged()
+    }
 }

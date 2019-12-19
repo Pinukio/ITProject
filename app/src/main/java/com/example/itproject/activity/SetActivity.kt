@@ -31,9 +31,11 @@ class SetActivity : AppCompatActivity() {
     private var progress = 0f
     private lateinit var array_incorrect : ArrayList<Int>
     private var lastIndex : Int = 0
+    private var lastIndex_card : Int = 0
     private var isFromOther : Boolean = false
     private lateinit var array_star : BooleanArray
     private var fix = true
+    private lateinit var adapter : SetAdapter
     companion object {
         lateinit var ac : SetActivity
     }
@@ -72,6 +74,7 @@ class SetActivity : AppCompatActivity() {
                     progress = (it["progress"] as Double).toFloat()
                     array_incorrect = it["array_incorrect"] as ArrayList<Int>
                     lastIndex = (it["lastIndex"] as Long).toInt()
+                    lastIndex_card = (it["lastIndex_card"] as Long).toInt()
                     array_star = BooleanArray(size)
                     for(i in 0 until size) {
                         array_word.add("")
@@ -113,13 +116,6 @@ class SetActivity : AppCompatActivity() {
             }
     }
 
-    /*private fun setStarArray(i : Int) {
-        tmp.collection("_").document(i.toString()).get()
-            .addOnSuccessListener {
-
-            }
-    }*/
-
     private fun setRecycler() {
         SetActivity_recycler.layoutManager = LinearLayoutManager(this)
         list = mutableListOf<Model>().apply {
@@ -146,7 +142,7 @@ class SetActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 name = it["name"].toString()
                 profile = it["profile"].toString()
-                val adapter =
+                adapter =
                     SetAdapter(list!!, name, profile, this)
                 SetActivity_recycler.adapter = adapter
             }
@@ -165,10 +161,32 @@ class SetActivity : AppCompatActivity() {
 
     fun moveToCard() {
         val intent = Intent(this, CardActivity::class.java)
-        intent.putStringArrayListExtra("array_word", array_word)
-        intent.putStringArrayListExtra("array_meaning", array_meaning)
-        intent.putExtra("array_star", array_star)
+        if(lastIndex_card != array_word.size) {
+            val tmp_word : ArrayList<String> = ArrayList()
+            val tmp_meaning : ArrayList<String> = ArrayList()
+            val tmp_star = BooleanArray(array_word.size - lastIndex_card)
+            for((index, i) in (lastIndex_card until array_word.size).withIndex()) {
+                tmp_word.add(array_word[i])
+                tmp_meaning.add(array_meaning[i])
+                tmp_star[index] = array_star[i]
+            }
+            intent.putStringArrayListExtra("array_word", tmp_word)
+            intent.putStringArrayListExtra("array_meaning", tmp_meaning)
+            intent.putExtra("array_star", tmp_star)
+            intent.putExtra("lastIndex_card", lastIndex_card)
+        }
+        else {
+            intent.putStringArrayListExtra("array_word", array_word)
+            intent.putStringArrayListExtra("array_meaning", array_meaning)
+            intent.putExtra("array_star", array_star)
+
+        }
+        intent.putExtra("title", title)
         startActivity(intent)
+
+        //intent.putStringArrayListExtra("array_word", array_word)
+        //intent.putStringArrayListExtra("array_meaning", array_meaning)
+
     }
 
     fun getIsFromOther() : Boolean {
@@ -181,5 +199,25 @@ class SetActivity : AppCompatActivity() {
 
     fun getStar(index : Int) : Boolean {
         return array_star[index]
+    }
+
+    fun changeStar(i : Int, b : Boolean) {
+        adapter.changeStar(i, b)
+    }
+
+    fun setLastIndexCard(i : Int) {
+        lastIndex_card = i
+    }
+
+    fun getWords() : ArrayList<String> {
+        return array_word
+    }
+
+    fun getMeanings() : ArrayList<String> {
+        return array_meaning
+    }
+
+    fun getStars() : BooleanArray {
+        return array_star
     }
 }

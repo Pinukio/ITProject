@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.CardActivity"
-    android:orientation="vertical"
-    android:clipChildren="false">
+    tools:context=".activity.ResultActivity"
+    android:background="#ffffff">
 
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
@@ -27,10 +26,8 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:layout_margin="15dp"
-                android:id="@+id/Card_back"
-                >
-
-            </ImageView>
+                android:id="@+id/CardResult_back"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -48,17 +45,17 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <link.fls.swipestack.SwipeStack
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
-        android:layout_marginBottom="100dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginEnd="60dp"
-        android:id="@+id/Card_card"
-        app:swipe_rotation="5"
-        app:stack_rotation="0"
-        app:stack_spacing="8dp"
-        />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="단어카드 재시작"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_background"
+            android:textColor="@color/colorMain"
+            android:padding="15dp"
+            android:textSize="16sp"
+            android:id="@+id/CardResult_btn"
+            android:layout_centerInParent="true"/>
 
-</LinearLayout>
+
+</RelativeLayout>

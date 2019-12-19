@@ -1,7 +1,6 @@
 package com.example.itproject.activity
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -324,7 +323,9 @@ class MainActivity : AppCompatActivity() {
         val count_ : Int = getSetsSize()
         textview_allSet_main.text = "보유 중인 학습 세트 : ${count_}개"
         if(count_ != count) {
-            removeMS()
+            //removeMS()
+            removeFragment("ManageSet")
+            removeFragment("Profile")
             count = count_
         }
         if(shouldRefresh()) {
@@ -346,12 +347,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun removeMS() {
-        val f = fragmentManager.findFragmentByTag("ManageSet")
+    private fun removeFragment(tag : String) {
+        val f = fragmentManager.findFragmentByTag(tag)
         if(f != null) {
             fragmentManager.beginTransaction().remove(f).commit()
         }
     }
+
+    /*private fun removePF() { //profile fragment
+        val f = fragmentManager.findFragmentByTag("Profile")
+        if(f != null) {
+            fragmentManager.beginTransaction().remove(f).commit()
+        }
+    }*/
 
     fun getSetsSize() : Int{
         val sf : SharedPreferences = getSharedPreferences("count_sets", Context.MODE_PRIVATE)

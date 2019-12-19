@@ -16,4 +16,14 @@
         android:textSize="44sp"
         android:text="1"/>
 
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/star_white"
+        android:id="@+id/Card_star"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="15dp"
+        />
+
 </androidx.cardview.widget.CardView>

@@ -77,10 +77,14 @@ class ManageSetFragment : Fragment() {
                 for(doc in it) {
                     array_title.add(doc.id)
                 }
-                //makeList(0)
-                for(i in 0 until array_title.size) {
-                    list.add(emptyItem)
-                    makeList(i)
+                if(array_title.size == 0) {
+                    dialog.dismiss()
+                }
+                else {
+                    for(i in 0 until array_title.size) {
+                        list.add(emptyItem)
+                        makeList(i)
+                    }
                 }
             }
     }

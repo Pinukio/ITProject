@@ -10,26 +10,44 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import com.example.itproject.R
+import com.example.itproject.activity.SetActivity
 
 class CardAdapter(private val array_word: ArrayList<String>, private val array_meaning: ArrayList<String>, private val array_star: BooleanArray) : BaseAdapter(),FragmentManager.OnBackStackChangedListener {
 
     private lateinit var textView : TextView
     private var cnt = 0
     private val array_view : ArrayList<View> = ArrayList()
+    //private val array_star : ArrayList<Boolean> = ArrayList()
     //private lateinit var listener : View.OnClickListener
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.card, parent, false)
         textView = view.findViewById(R.id.textViewCard)
         textView.text = array_word[position]
+        val star = view.findViewById<ImageView>(R.id.Card_star)
+        if(array_star[position])
+            star.setImageResource(R.drawable.star_yellow)
+        else
+            star.setImageResource(R.drawable.star_white)
+        val ac = SetActivity.ac
+        star.setOnClickListener {
+            if(array_star[position]) {
+                //체크되어 있으면
+                star.setImageResource(R.drawable.star_white)
+                array_star[position] = false
+                ac.changeStar(position, false)
+            }
+            else {
+                star.setImageResource(R.drawable.star_yellow)
+                array_star[position] = true
+                ac.changeStar(position, true)
+            }
+        }
         array_view.add(view)
-        /*listener = View.OnClickListener {
-
-        }*/
-        //textView.setOnClickListener(listener)
         return view
     }
 

@@ -126,15 +126,7 @@ class StudyAdapter(private val array_meaning : ArrayList<String>, private val ac
                         if(array_incorrect.size > index && !tmp)
                             setSelections(array_incorrect[index])
                         else {
-                            //index++
-                            /*index = if(array_incorrect.size == 0)
-                                0
-                            else
-                                array_incorrect[0]*/
-                            /*progress = if(array_incorrect.size > 0)
-                                (index - array_incorrect.size).toFloat() / array_meaning.size.toFloat() * 100
-                            else
-                                100f*/
+
                             updateDB()
                             moveToResult()
                         }
@@ -176,11 +168,10 @@ class StudyAdapter(private val array_meaning : ArrayList<String>, private val ac
             }
         }
         activity.setWord(index)
-        if(!isRestarted)
-            progress = (index - array_incorrect.size).toFloat() / array_meaning.size.toFloat() * 100
+        progress = if(!isRestarted)
+            (index - array_incorrect.size).toFloat() / array_meaning.size.toFloat() * 100
         else
-            progress = (array_meaning.size - array_incorrect.size).toFloat() / array_meaning.size.toFloat() * 100
-            //progress += ((index - array_incorrect.size).toFloat() / array_meaning.size.toFloat()) * 100
+            (array_meaning.size - array_incorrect.size).toFloat() / array_meaning.size.toFloat() * 100
         activity.setCurrentProgress(progress)
         updateDB()
     }

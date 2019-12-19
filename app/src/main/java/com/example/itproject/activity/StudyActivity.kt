@@ -34,7 +34,7 @@ class StudyActivity : AppCompatActivity() {
             Study_progress.progressBackgroundColor = Color.LTGRAY
             Study_progress.progressColor = Color.parseColor("#2196f3")
             Study_progress.max = 100f
-            progress = intent.getFloatExtra("progress", 0f) //나갔다 왔을 때 재시작에 필요한 요소가 무엇인지 생각하고 db 재설계해야 함. lastIndex와 틀린 리스트 넣으면 될 듯?
+            progress = intent.getFloatExtra("progress", 0f)
             setCurrentProgress(progress)
             Study_recycler.layoutManager = LinearLayoutManager(applicationContext)
             adapter = StudyAdapter(array_meaning, this, isRestarted)
