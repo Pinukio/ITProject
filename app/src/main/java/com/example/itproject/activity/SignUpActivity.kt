@@ -51,7 +51,7 @@ class SignUpActivity : AppCompatActivity() {
                         if(it.isSuccessful) {
                             Toast.makeText(applicationContext, "회원가입에 성공하였습니다", Toast.LENGTH_SHORT).show()
                             val db = FirebaseFirestore.getInstance()
-                            val map = hashMapOf("name" to name, "profile" to "")
+                            val map = hashMapOf("name" to name)
                             db.collection("users").document(email).set(map)
                             dialog.dismiss()
                             val intent = Intent(this, MainActivity::class.java)

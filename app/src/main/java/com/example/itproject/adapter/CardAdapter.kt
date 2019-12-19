@@ -97,4 +97,8 @@ class CardAdapter(private val array_word: ArrayList<String>, private val array_m
             oa1.start()
         }
     }
+
+    fun setCnt(i : Int) {
+        cnt = i
+    }
 }

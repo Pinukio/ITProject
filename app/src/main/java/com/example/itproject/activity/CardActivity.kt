@@ -47,10 +47,12 @@ class CardActivity : AppCompatActivity() {
 
             override fun onViewSwipedToLeft(position: Int) {
                 addToDB(position, lastIndex)
+                adapter.setCnt(0)
             }
 
             override fun onViewSwipedToRight(position: Int) {
                 addToDB(position, lastIndex)
+                adapter.setCnt(0)
             }
 
             override fun onStackEmpty() {
