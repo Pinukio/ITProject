@@ -18,7 +18,8 @@ class ResultActivity : AppCompatActivity() {
 
         val intent = intent
         if(intent != null) {
-            val progressText = "${intent.getFloatExtra("progress", 0f).toInt()}%"
+            val progress = intent.getFloatExtra("progress", 0f)
+            val progressText = "${progress.toInt()}%"
             val array_incorrect : ArrayList<Int> = intent.getIntegerArrayListExtra("array_incorrect")!!
             val sizeText = "${array_incorrect.size}개"
             Result_progress.text = progressText
@@ -32,6 +33,7 @@ class ResultActivity : AppCompatActivity() {
                 intent_.putExtra("title", intent.getStringExtra("title"))
                 intent_.putIntegerArrayListExtra("array_incorrect", array_incorrect)
                 intent_.putExtra("lastIndex", intent.getIntExtra("lastIndex", 0))
+                intent_.putExtra("progress", progress)
                 startActivity(intent_)
                 finish()
             }
