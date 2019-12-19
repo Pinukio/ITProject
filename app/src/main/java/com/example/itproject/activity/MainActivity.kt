@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -320,9 +321,9 @@ class MainActivity : AppCompatActivity() {
         val count_ : Int = getSetsSize()
         textview_allSet_main.text = "보유 중인 학습 세트 : ${count_}개"
         if(count_ != count) {
-            //removeMS()
             removeFragment("ManageSet")
             removeFragment("Profile")
+            where = 0
             count = count_
         }
         if(shouldRefresh()) {
