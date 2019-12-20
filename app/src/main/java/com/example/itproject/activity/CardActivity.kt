@@ -3,6 +3,7 @@ package com.example.itproject.activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.example.itproject.R
 import com.example.itproject.adapter.CardAdapter
 import com.google.firebase.auth.FirebaseAuth
@@ -40,7 +41,8 @@ class CardActivity : AppCompatActivity() {
             }
 
             override fun onSwipeProgress(position: Int, progress: Float) {
-                cardTouched = false
+                if(progress > 0.02 || progress < -0.02)
+                    cardTouched = false
             }
         }
         val stackListener : SwipeStack.SwipeStackListener = object : SwipeStack.SwipeStackListener {
